@@ -1,32 +1,6 @@
-
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-    <!DOCTYPE html>
-<html>
-<head>
-<script>
-    function checkPassword(371990) {
-        // 設定您的密碼，例如：123456
-        var password = prompt("請輸入訪問密碼：");
-        
-        if (password !== "371990") {
-            alert("密碼錯誤！");
-            // 密碼錯誤時重新導向或關閉網頁
-            window.location.href="about:blank"; 
-        } else {
-            alert("歡迎訪問！");
-        }
-    }
-    // 載入網頁時立即觸發驗證
-    checkPassword();
-</script>
-</head>
-<body>
-    <h1>這是受密碼保護的網頁內容</h1>
-    <p>只有輸入正確密碼才能看到這裡。</p>
-</body>
-</html>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>shikoku2026</title>
@@ -56,7 +30,7 @@
         }
         .active-tab {
             color: #1A303A; 
-            font-weight: 900;
+            font-weight: 950;
         }
         /* 隱藏原生滾動條，保持文青整潔 */
         .no-scrollbar::-webkit-scrollbar {
@@ -95,13 +69,21 @@
     <!-- 桌面端自動縮減為 Phone Frame，手機端自動滿版 -->
     <div class="app-container max-w-md shadow-2xl">
 
-        <!-- 1. 開屏手繪海邊故事頁 (Splash Screen) -->
+        <!-- 1. 開屏手繪海邊故事頁 (Splash Screen + 密碼鎖保護閘) -->
         <div id="splash-screen" class="absolute inset-0 z-50 bg-cover bg-center flex flex-col items-center justify-start transition-all duration-700 pointer-events-auto" style="background-image: url('https://i.ibb.co/sdjvQZXK/05a5e65565cd1919a84950206637bfd3.jpg');">
-            <!-- 上方 1/3 的黃金按鈕位置 -->
-            <div class="mt-[28vh]">
-                <button onclick="dismissSplash()" class="px-8 py-4 bg-white/90 hover:bg-white text-[#1A303A] font-extrabold text-base tracking-widest rounded-full shadow-[0_8px_30px_rgba(0,0,0,0.15)] border border-[#E2DCD5] flex items-center gap-3 transition-transform active:scale-95 duration-200">
-                    <i class="fa-solid fa-paper-plane text-orange-400 animate-pulse"></i>
-                    <span>開啟日本四國之旅</span>
+            <!-- 上方 1/3 的黃金按鈕與輸入框位置 -->
+            <div class="mt-[28vh] flex flex-col items-center gap-3.5 w-[280px] p-6 rounded-3xl bg-white/70 backdrop-blur-md shadow-[0_12px_40px_rgba(26,48,58,0.15)] border border-white/30 text-center animate-zoom-in">
+                <div class="space-y-1">
+                    <span class="text-xs font-black tracking-[0.2em] text-[#1A303A] uppercase block">SHIKOKU 2026</span>
+                    <span class="text-[10px] font-bold text-slate-500 block">請輸入 6 位數專屬密碼解鎖行程</span>
+                </div>
+                
+                <!-- 密碼輸入框 -->
+                <input id="splash-passcode" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="6" placeholder="請輸入密碼" class="w-full py-3.5 text-center text-xl tracking-[0.5em] font-black rounded-2xl bg-white/90 border border-[#E2DCD5] focus:outline-none focus:ring-2 focus:ring-[#1A303A] text-[#1A303A] placeholder:tracking-normal placeholder:text-xs">
+                
+                <button onclick="verifyPasscode()" class="w-full py-3.5 bg-[#1A303A] hover:bg-slate-800 text-white font-extrabold text-sm tracking-widest rounded-2xl shadow-[0_8px_30px_rgba(0,0,0,0.1)] flex items-center justify-center gap-2 transition-transform active:scale-95 duration-200">
+                    <i class="fa-solid fa-key text-orange-400"></i>
+                    <span>驗證密碼並開啟</span>
                 </button>
             </div>
         </div>
@@ -377,7 +359,20 @@
 
         let currentDayFilter = 1;
 
-        // 解除開屏畫面
+        // 解除開屏畫面與密碼驗證
+        function verifyPasscode() {
+            const input = document.getElementById('splash-passcode').value;
+            if (input === '371990') {
+                localStorage.setItem('shikoku_unlocked_2026', 'true');
+                dismissSplash();
+                showNotification("🔓 歡迎開啟日本四國自駕之旅！");
+            } else {
+                showNotification("❌ 密碼不正確，請重新輸入", "error");
+                document.getElementById('splash-passcode').value = '';
+                document.getElementById('splash-passcode').focus();
+            }
+        }
+
         function dismissSplash() {
             const splash = document.getElementById('splash-screen');
             splash.classList.add('opacity-0', 'pointer-events-none');
@@ -389,7 +384,7 @@
         // --- 靜態行程資料庫原始版 ---
         const shikokuDb = {
             overview: {
-                intro: "親愛的長輩與家人，歡迎來到四國！這是一片被瀨戶內海溫柔環抱、蘊含極致文化與慢活節奏的土地。我們將遊歷香川、德島與愛媛三縣。導遊 MIO MIO 針對您的體力進行了尊榮自駕優化，避開陡坡，保證全程冷氣與平坦步道，讓您舒適度度過愜意假期！",
+                intro: "親愛的長輩與家人，歡迎來到四國！這是一片被瀨戶內海溫柔環抱、蘊含極致文化與慢活節奏的土地。我們將遊歷香川、德島與愛媛三縣。導遊 MIO MIO 針對您的體力進行了尊榮自駕優化，避開陡坡，保證全程冷氣與平坦步道，讓您舒適度過愜意假期！",
                 flights: [
                     { 
                         date: "7/24 (五) 去程", 
@@ -673,7 +668,7 @@
                             time: "18:30+",
                             title: "入住：edit x seven 小豆島精品公寓",
                             category: "住宿",
-                            desc: "抵達公寓辦理入住。在 51 平方米超大奢華公寓放鬆，配有奢華大餐桌與無障礙海景大落地窗。公寓擁有名品級的露天觀海足湯池、私人乾蒸桑拿房以及海景恆溫泳池（夏季開放）！",
+                            desc: "抵達公寓辦理入住. 在 51 平方米超大奢華公寓放鬆，配有奢華大餐桌與無障礙海景大落地窗。公寓擁有名品級的露天觀海足湯池、私人乾蒸桑拿房以及海景恆溫泳池（夏季開放）！",
                             image: "https://i.ibb.co/yFc8H7JK/01d.webp",
                             mapcode: "364 743 221*34",
                             gmaps: "https://www.google.com/maps/search/?api=1&query=edit+x+seven+小豆島",
@@ -1933,6 +1928,12 @@
         window.onload = function () {
             loadAllData();
             switchTab('overview');
+
+            // 檢查安全驗證鎖狀態
+            const unlocked = localStorage.getItem('shikoku_unlocked_2026');
+            if (unlocked === 'true') {
+                dismissSplash();
+            }
 
             if (window.pendingTripData) {
                 setTimeout(() => {
