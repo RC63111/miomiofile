@@ -73,7 +73,8 @@
     <div class="app-container w-full max-w-md h-screen relative mx-auto bg-[#FAF8F5] md:shadow-2xl overflow-hidden">
         
         <!-- 1. 開屏手繪海邊故事頁 (Splash Screen) -->
-        <div id="splash-screen" class="absolute inset-0 z-50 bg-cover bg-center flex flex-col items-center justify-start pointer-events-auto transition-all duration-700" style="background-image: url('https://i.ibb.co/sdjvQZXK/05a5e65565cd1919a84950206637bfd3.jpg');">
+        <!-- 背景圖已更換為指定圖片 https://i.ibb.co/1YcP29zz/ba2fcbd546c5fdba5c29d9d1f5fc0994.jpg -->
+        <div id="splash-screen" class="absolute inset-0 z-50 bg-cover bg-center flex flex-col items-center justify-start pointer-events-auto transition-all duration-700" style="background-image: url('https://i.ibb.co/1YcP29zz/ba2fcbd546c5fdba5c29d9d1f5fc0994.jpg');">
             <!-- 密碼框完全固定在最頂部 (螢幕上方 6% 處)，高度避讓背景中下方的車子與人物 -->
             <div class="mt-[6vh] w-11/12 max-w-[340px] glass border border-white/20 p-5 rounded-[24px] shadow-2xl flex flex-col items-center space-y-4">
                 <div class="text-center">
@@ -82,6 +83,13 @@
                 </div>
                 <div class="w-full flex flex-col gap-2.5">
                     <input id="splash-passcode" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="6" placeholder="請輸入 6 位密碼" class="w-full px-4 py-3 rounded-2xl border border-[#E2DCD5] bg-white/90 text-[#1A303A] text-center font-black tracking-[0.4em] text-sm focus:outline-[#1A303A]">
+                    
+                    <!-- 增設：自選是否儲存密碼 (記住登入狀態) -->
+                    <div class="flex items-center gap-2 self-start pl-1 py-1">
+                        <input id="remember-passcode" type="checkbox" checked class="w-4 h-4 rounded border-[#E2DCD5] text-[#1A303A] focus:ring-[#1A303A] accent-[#1A303A] cursor-pointer">
+                        <label for="remember-passcode" class="text-[10px] text-slate-500 font-bold select-none cursor-pointer">下次自動登入 (儲存密碼)</label>
+                    </div>
+
                     <button onclick="verifyPasscode()" class="w-full py-3 bg-[#1A303A] text-white font-bold text-xs rounded-2xl shadow-md flex items-center justify-center gap-1.5 active:scale-95 transition-all tracking-widest">
                         <i class="fa-solid fa-paper-plane text-orange-400"></i> 開啟日本四國之旅
                     </button>
@@ -388,7 +396,7 @@
 
         let currentDayFilter = 1;
 
-        // --- 全行程資料庫 ---
+        // --- 全行程資料庫 (已完全修復多行引號 Syntax Error 崩潰漏洞) ---
         const shikokuDb = {
             overview: {
                 intro: "親愛的長輩與家人，歡迎來到四國！這是一片被瀨戶內海溫柔環抱、蘊含極致文化與慢活節奏的土地。我們將遊歷香川、德島與愛媛三縣。導遊 MIO MIO 針對您的體力進行了尊榮自駕優化，避開陡坡，保證全程冷氣與平坦步道，讓您舒適度過愜意假期！",
@@ -430,7 +438,7 @@
                             time: "10:00 - 14:45",
                             title: "香港起飛 ➔ 降落高松機場",
                             category: "交通",
-                            desc: "搭乘 UO 642 航班，飛往四國高松。3人合共 2 件，總上限 20 kg 行李，隨身 3 件包包。長輩可在舒適機艙中稍作休息或小睡。",
+                            desc: "搭乘 UO 642 航班，飛往四國高松。3人合共 2 件，總上限 20 kg 行記，隨身 3 件包包。長輩可在舒適機艙中稍作休息或小睡。",
                             image: "https://i.ibb.co/7NJ7ww9N/27-HKExpress-2.jpg",
                             mapcode: "無需代碼",
                             gmaps: "https://www.google.com/maps/search/?api=1&query=高松空港",
@@ -473,7 +481,7 @@
                             time: "18:30+",
                             title: "晚餐：香川名物「骨付鳥 一鶴」",
                             category: "餐飲",
-                            desc: "享用香川縣無人不知的帶骨烤雞腿名店。高溫大窯烤炙，香氣撲鼻，搭配招牌生高麗菜解膩。",
+                            desc: "享用香川縣無人不知的帶骨烤雞腿名店。高溫大窯烤炙，香氣鋪鼻，搭配招牌生高麗菜解膩。",
                             image: "https://i.ibb.co/SXYnBCGr/4-chicken.jpg",
                             mapcode: "60 607 355*88",
                             gmaps: "https://www.google.com/maps/search/?api=1&query=一鶴+高松店",
@@ -518,8 +526,8 @@
                             walk: "低 (平坦細砂步道為主，和船免步行)",
                             toilet: "便利 (園區內多處無障礙廁所)",
                             temp: "戶外有綠蔭，需備傘防曬",
-                            tips: "✨ <b>特色亮點 🍵：</b> 掬月亭享有「大茶屋」美譽，是全日賞景最完美位置。
-🛍️ <b>推薦伴手禮 🎁：</b> 園區出口售票處可購買栗林限定的<b>「栗餅 (栗饅頭)」</b>，口感細軟甘甜。"
+                            // 此處多行字串已安全重構，避免語法崩潰
+                            tips: `✨ <b>特色亮點 🍵：</b> 掬月亭享有「大茶屋」美譽，是全日賞景最完美位置。<br>🛍️ <b>推薦伴手禮 🎁：</b> 園區出口售票處可購買栗林限定的<b>「栗餅 (栗饅頭)」</b>，口感細軟甘甜。`
                         },
                         {
                             time: "🚗 自駕行車約 75 分鐘 (高速公路)",
@@ -724,7 +732,7 @@
                             time: "10:45 - 12:00",
                             title: "丸金醬油紀念館 ➔ 醬油冰淇淋",
                             category: "景點",
-                            desc: "參觀百年木桶釀造醬油館。吹著涼爽冷氣，漫步於香氣濃郁的木造展廳內，並品嚐全島獨一無二的招牌特產「醬油冰淇淋」。",
+                            desc: "參觀百年木桶醬油釀造館。吹著涼爽冷氣，漫步於香氣濃郁的木造展廳內，並品嚐全島獨一無二的招牌特產「醬油冰淇淋」。",
                             image: "https://i.ibb.co/NnYQRYP5/soyasauce.jpg",
                             mapcode: "364 742 331*22",
                             gmaps: "https://www.google.com/maps/search/?api=1&query=マルキン醤油記念館",
@@ -799,8 +807,8 @@
                             walk: "低 (全館有無障礙扶手電梯，看台區設有大量長椅)",
                             toilet: "極便利 (多處無障礙洗手間)",
                             temp: "館內強冷氣，傍晚露天看台微涼",
-                            tips: "✨ <b>必看亮點 🐬：</b> 17:30 夕陽秀最適合拍照。
-🛍️ <b>特色手信 🎁：</b> 水族館禮品店必買<b>「限定海獺吸水毛巾」</b>與可愛的海豚布偶。"
+                            // 此處多行字串已安全重構，避免語法崩潰
+                            tips: `✨ <b>必看亮點 🐬：</b> 17:30 夕陽秀最適合拍照。<br>🛍️ <b>特色手信 🎁：</b> 水族館禮品店必買<b>「限定海獺吸水毛巾」</b>與可愛的海豚布偶。`
                         },
                         {
                             time: "🚗 自駕行車約 70 分鐘 (高速公路)",
@@ -855,8 +863,8 @@
                             walk: "低 (館內全電梯覆蓋，路面光滑平坦)",
                             toilet: "極便利 (館內多處高級無障礙洗手間)",
                             temp: "強效冷氣覆蓋",
-                            tips: "🛍️ <b>推薦手信 🎁：</b> 買世界第一質感的<b>「今治吸水方巾 (可客製刺繡名字)」</b>，吸水度絕佳且極柔軟。
-✨ <b>特色亮點 📸：</b> 彩虹棉線牆前拍照對比鮮明，是替長輩拍出亮麗個人大頭照的最佳位置！"
+                            // 此處多行字串已安全重構，避免語法崩潰
+                            tips: `🛍️ <b>推薦手信 🎁：</b> 買世界第一質感的<b>「今治吸水方巾 (可客製刺繡名字)」</b>，吸水度絕佳且極柔軟。<br>✨ <b>特色亮點 📸：</b> 彩虹棉線牆前拍照對比鮮明，是替長輩拍出亮麗個人大頭照的最佳位置！`
                         },
                         {
                             time: "🚗 自駕行車約 30 分鐘",
@@ -1072,11 +1080,17 @@
             localStorage.setItem('shikoku_local_vouchers', JSON.stringify(localVouchers));
         }
 
-        // --- 密碼驗證解鎖開屏閘道 ---
+        // --- 密碼驗證解鎖開屏閘道 (新增：自選是否記住/儲存密碼) ---
         function verifyPasscode() {
             const input = document.getElementById('splash-passcode').value;
+            const rememberCheckbox = document.getElementById('remember-passcode');
+            
             if (input === '371990') {
-                localStorage.setItem('shikoku_pass_verified', 'true');
+                if (rememberCheckbox && rememberCheckbox.checked) {
+                    localStorage.setItem('shikoku_pass_verified', 'true');
+                } else {
+                    localStorage.removeItem('shikoku_pass_verified'); // 不儲存/清空之前記錄
+                }
                 dismissSplash();
             } else {
                 showNotification('密碼錯誤！請重新輸入。', 'error');
@@ -1702,7 +1716,7 @@
                             <p class="text-[9px] text-red-700">自駕旅日安全第一，建議截圖備份</p>
                         </div>
                     </div>
-                    <p class="text-[10px] text-red-900 leading-relaxed font-normal">如遇交通事故，請立刻先靠邊停车保護家人，隨即撥打以下當地電話。與警方聯絡後通知租車公司。</p>
+                    <p class="text-[10px] text-red-900 leading-relaxed font-normal">如遇交通事故，請立刻先靠邊停車保護家人，隨即撥打以下當地電話。與警方聯絡後通知租車公司。</p>
                 </div>
 
                 <div class="space-y-2.5">
