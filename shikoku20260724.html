@@ -305,38 +305,20 @@
             }, 2500);
         }
 
-        // --- 地圖 APP / 網頁深度路由喚醒 ---
+                // --- 地圖 APP / 網頁深度路由喚醒 (優化版) ---
         window.openMapsApp = function(event, query, fallbackUrl) {
             if (event) {
                 event.preventDefault();
                 event.stopPropagation();
             }
-            if (!query && !fallbackUrl) return;
+            if (!query) return;
 
-            const encodedQuery = encodeURIComponent(query);
-            // iOS 專屬 Google Maps App 協議
-            const iosGoogleMapsUrl = `comgooglemaps://?q=${encodedQuery}`;
-            const fallback = fallbackUrl || `https://www.google.com/maps/search/?api=1&query=${encodedQuery}`;
-
-            // 判斷是否為 iOS 設備 (iPhone/iPad/iPod 或觸控 Mac)
-            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || 
-                          (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-
-            if (isIOS) {
-                // 優先調用 iOS App 協議
-                window.location.href = iosGoogleMapsUrl;
-
-                // 若 800 毫秒內 focus 還留在原網頁，則 Fallback 彈出新視窗開啟網頁版
-                const start = Date.now();
-                setTimeout(() => {
-                    if (Date.now() - start < 1500 && document.visibilityState === 'visible') {
-                        window.open(fallback, '_blank');
-                    }
-                }, 800);
-            } else {
-                // Android 系統與桌面端會自動引導
-                window.open(fallback, '_blank');
-            }
+            // 使用 Google 官方通用連結 (Universal Link)
+            // 這是業界標準：若手機有安裝 App，iOS/Android 會自動接手開啟 App，無需 JS 強制跳轉
+            const url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
+            
+            // 直接以新視窗開啟，iOS 系統會自動判定並呼叫地圖 App
+            window.open(url, '_blank');
         };
 
         // 匯率常數 (1 JPY = 0.052 MOP)
