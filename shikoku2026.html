@@ -1,4 +1,30 @@
 <!DOCTYPE html>
+<html>
+<head>
+<script>
+    function checkPassword(371990) {
+        // 設定您的密碼，例如：123456
+        var password = prompt("請輸入訪問密碼：");
+        
+        if (password !== "371990") {
+            alert("密碼錯誤！");
+            // 密碼錯誤時重新導向或關閉網頁
+            window.location.href="about:blank"; 
+        } else {
+            alert("歡迎訪問！");
+        }
+    }
+    // 載入網頁時立即觸發驗證
+    checkPassword();
+</script>
+</head>
+<body>
+    <h1>這是受密碼保護的網頁內容</h1>
+    <p>只有輸入正確密碼才能看到這裡。</p>
+</body>
+</html>
+
+<!DOCTYPE html>
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
