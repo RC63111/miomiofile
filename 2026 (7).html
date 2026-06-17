@@ -1,0 +1,1919 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>shikoku2026</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Google Fonts: Noto Sans TC & Playfair Display -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;950&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    
+    <!-- KaTeX 數學公式渲染 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
+
+    <style>
+        body {
+            font-family: 'Noto Sans TC', 'Hiragino Kaku Gothic ProN', 'PingFang TC', sans-serif;
+            background-color: #1A303A; /* 桌端背景深邃海藍 */
+            -webkit-tap-highlight-color: transparent;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+        .serif-title {
+            font-family: 'Playfair Display', 'Noto Serif TC', serif;
+        }
+        .active-tab {
+            color: #1A303A; 
+            font-weight: 900;
+        }
+        /* 隱藏原生滾動條，保持文青整潔 */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        /* 原生 App 容器樣式 */
+        .app-container {
+            width: 100%;
+            height: 100dvh;
+            display: flex;
+            flex-direction: column;
+            background-color: #FAF8F5; /* 文青暖砂紙色 */
+            overflow: hidden;
+            position: relative;
+        }
+        .hand-card {
+            border: 1px solid #E2DCD5;
+            box-shadow: 0 4px 12px rgba(26, 48, 58, 0.03);
+            background-color: #FFFFFF;
+        }
+        @keyframes zoomIn {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        .animate-zoom-in {
+            animation: zoomIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center h-screen w-screen">
+
+    <!-- 桌面端自動縮減為 Phone Frame，手機端自動滿版 -->
+    <div class="app-container max-w-md shadow-2xl">
+
+        <!-- 1. 開屏手繪海邊故事頁 (Splash Screen) -->
+        <div id="splash-screen" class="absolute inset-0 z-50 bg-cover bg-center flex flex-col items-center justify-start transition-all duration-700 pointer-events-auto" style="background-image: url('https://i.ibb.co/sdjvQZXK/05a5e65565cd1919a84950206637bfd3.jpg');">
+            <!-- 上方 1/3 的黃金按鈕位置 -->
+            <div class="mt-[28vh]">
+                <button onclick="dismissSplash()" class="px-8 py-4 bg-white/90 hover:bg-white text-[#1A303A] font-extrabold text-base tracking-widest rounded-full shadow-[0_8px_30px_rgba(0,0,0,0.15)] border border-[#E2DCD5] flex items-center gap-3 transition-transform active:scale-95 duration-200">
+                    <i class="fa-solid fa-paper-plane text-orange-400 animate-pulse"></i>
+                    <span>開啟日本四國之旅</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- 2. 固定頂部導航列 (Header) -->
+        <header class="flex-none bg-white border-b border-[#E2DCD5] px-5 py-4 z-30">
+            <div class="flex justify-between items-center">
+                <div class="flex flex-col">
+                    <h1 class="serif-title text-2xl font-black tracking-widest text-[#1A303A]">shikoku2026</h1>
+                    <span class="text-[10px] font-bold text-slate-400 tracking-wider mt-0.5">四國2026自駕遊</span>
+                </div>
+                <div class="flex flex-col items-end">
+                    <span class="text-[10px] font-black text-amber-600 bg-amber-50 border border-amber-100 px-2 py-0.5 rounded-md">MIO MIO 專屬</span>
+                    <span class="text-[9px] text-slate-400 font-bold mt-1">2026.07.24 - 07.30</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- 3. 可上下滾動的中間內容視窗 -->
+        <main class="flex-1 overflow-y-auto no-scrollbar px-4 py-5 space-y-6" id="app-viewport">
+            <!-- JS 動態注入頁面內容 -->
+        </main>
+
+        <!-- 4. 固定底部懸浮導航列 (Tab Bar) -->
+        <nav class="flex-none bg-white border-t border-[#E2DCD5] shadow-[0_-5px_30px_rgba(0,0,0,0.03)] py-3 z-30">
+            <div class="flex justify-around items-center">
+                <button onclick="switchTab('overview')" id="nav-overview" class="flex flex-col items-center gap-1 text-slate-400 transition-colors">
+                    <i class="fa-solid fa-compass text-lg"></i>
+                    <span class="text-[10px] font-bold">概覽</span>
+                </button>
+                <button onclick="switchTab('itinerary')" id="nav-itinerary" class="flex flex-col items-center gap-1 text-slate-400 transition-colors">
+                    <i class="fa-solid fa-map-location-dot text-lg"></i>
+                    <span class="text-[10px] font-bold">行程</span>
+                </button>
+                <button onclick="switchTab('vouchers')" id="nav-vouchers" class="flex flex-col items-center gap-1 text-slate-400 transition-colors">
+                    <i class="fa-solid fa-passport text-lg"></i>
+                    <span class="text-[10px] font-bold">憑證</span>
+                </button>
+                <button onclick="switchTab('wallet')" id="nav-wallet" class="flex flex-col items-center gap-1 text-slate-400 transition-colors">
+                    <i class="fa-solid fa-wallet text-lg"></i>
+                    <span class="text-[10px] font-bold">記帳</span>
+                </button>
+                <button onclick="switchTab('emergency')" id="nav-emergency" class="flex flex-col items-center gap-1 text-slate-400 transition-colors">
+                    <i class="fa-solid fa-life-ring text-lg"></i>
+                    <span class="text-[10px] font-bold">應急</span>
+                </button>
+            </div>
+        </nav>
+
+        <!-- 5. 彈出式詳情卡片 (置中彈窗對齊畫面中間) -->
+        <div id="detail-modal" class="absolute inset-0 z-50 bg-[#1A303A]/60 backdrop-blur-sm hidden flex items-center justify-center p-4" onclick="closeDetailModal()">
+            <div class="bg-white w-full max-w-[90%] rounded-[24px] p-6 space-y-4 animate-zoom-in max-h-[80vh] overflow-y-auto no-scrollbar shadow-2xl border border-slate-100" onclick="event.stopPropagation()">
+                <div class="w-12 h-1 bg-slate-200 rounded-full mx-auto mb-2" onclick="closeDetailModal()"></div>
+                <div id="modal-content" class="space-y-4">
+                    <!-- 詳情內容動態渲染 -->
+                </div>
+                <button onclick="closeDetailModal()" class="w-full py-3 bg-[#1A303A] text-white font-extrabold rounded-2xl shadow-lg hover:bg-slate-800 transition text-sm">關閉詳情</button>
+            </div>
+        </div>
+
+        <!-- 📥 發現分享數據的雲端匯入提示彈出視窗 -->
+        <div id="import-modal" class="absolute inset-0 z-[60] bg-[#1A303A]/70 backdrop-blur-sm hidden flex items-center justify-center p-4">
+            <div class="bg-white w-full max-w-[90%] rounded-3xl p-6 space-y-5 animate-zoom-in shadow-2xl">
+                <div class="text-center space-y-2">
+                    <div class="w-16 h-16 bg-blue-50 text-blue-900 rounded-full flex items-center justify-center text-3xl mx-auto">
+                        <i class="fa-solid fa-cloud-arrow-down animate-bounce text-orange-400"></i>
+                    </div>
+                    <h3 class="text-xl font-black text-[#1A303A]">載入家人分享的新行程？</h3>
+                    <p class="text-xs text-slate-500 leading-relaxed">
+                        系統偵測到一組由家人同步分享的最新行程數據。確認匯入將會覆蓋您此台手機上目前的本地紀錄。
+                    </p>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <button onclick="rejectImport()" class="py-3 bg-slate-100 text-slate-600 font-bold rounded-xl text-xs">維持現狀</button>
+                    <button onclick="acceptImport()" class="py-3 bg-[#1A303A] text-white font-bold rounded-xl text-xs">確認匯入並同步</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 🔗 分享網址複製彈出視窗 -->
+        <div id="share-modal" class="absolute inset-0 z-50 bg-[#1A303A]/60 backdrop-blur-sm hidden flex items-center justify-center p-4" onclick="closeShareModal()">
+            <div class="bg-white w-full max-w-[90%] rounded-[24px] p-6 space-y-4 animate-zoom-in shadow-2xl" onclick="event.stopPropagation()">
+                <div class="flex justify-between items-center border-b border-slate-100 pb-3">
+                    <h3 class="text-lg font-black text-[#1A303A] flex items-center gap-2">
+                        <i class="fa-solid fa-share-nodes text-orange-400"></i> 分享同步網址
+                    </h3>
+                    <button onclick="closeShareModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+                </div>
+                <div class="space-y-3">
+                    <p class="text-xs text-slate-500 leading-relaxed">
+                        複製下方連結並傳送到微信、WhatsApp 或 LINE 家族群組。家人點開即可在他們的手機上同步更新您新修改的所有行程！
+                    </p>
+                    <textarea id="share-url-text" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs h-24 focus:outline-[#1A303A] resize-none" readonly></textarea>
+                </div>
+                <div class="grid grid-cols-1 pt-2">
+                    <button onclick="copyGeneratedLink()" class="py-3 bg-[#1A303A] text-white font-bold rounded-xl text-sm shadow-md flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-copy"></i> 一鍵複製分享連結
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. 新增/編輯自定義行程彈出視窗 -->
+        <div id="add-event-modal" class="absolute inset-0 z-50 bg-[#1A303A]/60 backdrop-blur-sm hidden flex items-center justify-center p-4" onclick="closeAddEventModal()">
+            <div class="bg-white w-full max-w-[90%] rounded-[24px] p-6 space-y-4 animate-zoom-in shadow-2xl" onclick="event.stopPropagation()">
+                <div class="flex justify-between items-center border-b border-slate-100 pb-3">
+                    <h3 id="add-event-modal-title" class="text-lg font-black text-[#1A303A] flex items-center gap-2">
+                        <i class="fa-solid fa-calendar-plus text-orange-400"></i> 新增自定義行程
+                    </h3>
+                    <button onclick="closeAddEventModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+                </div>
+                <div class="space-y-3 max-h-[50vh] overflow-y-auto no-scrollbar pr-1">
+                    <input type="hidden" id="new-event-day">
+                    <input type="hidden" id="new-event-index">
+                    
+                    <div>
+                        <label class="block text-xs font-bold text-slate-400 mb-1">行程標題 *</label>
+                        <input id="new-event-title" type="text" placeholder="例如: 瓦町星巴克咖啡館" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-[#1A303A]">
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-400 mb-1">時間區間 *</label>
+                            <input id="new-event-time" type="text" placeholder="例如: 15:00 - 16:00" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-[#1A303A]">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-400 mb-1">行程種類 *</label>
+                            <select id="new-event-cat" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-[#1A303A] font-bold">
+                                <option value="景點">景點 📸</option>
+                                <option value="餐飲">餐飲 🍽️</option>
+                                <option value="交通">交通 🚗</option>
+                                <option value="住宿">住宿 🏨</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-400 mb-1">圖片網址 (可選)</label>
+                        <input id="new-event-img" type="text" placeholder="https://..." class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-[#1A303A]">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-400 mb-1">行程詳細介紹與備註</label>
+                        <textarea id="new-event-desc" placeholder="請填寫本景點的特色..." class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm h-20 resize-none focus:outline-[#1A303A]"></textarea>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-400 mb-1">Google Maps 連結</label>
+                            <input id="new-event-gmaps" type="text" placeholder="https://..." class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-[#1A303A]">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-400 mb-1">車載 Mapcode</label>
+                            <input id="new-event-mapcode" type="text" placeholder="例如: 60 607 721*12" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-[#1A303A]">
+                        </div>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3 pt-2 border-t border-slate-100">
+                    <button onclick="closeAddEventModal()" class="py-3 bg-slate-100 text-slate-600 font-bold rounded-xl text-sm">取消</button>
+                    <button onclick="submitNewEvent()" class="py-3 bg-[#1A303A] text-white font-bold rounded-xl text-sm">儲存日程</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. 新增/編輯預約憑證彈出視窗 -->
+        <div id="add-voucher-modal" class="absolute inset-0 z-50 bg-[#1A303A]/60 backdrop-blur-sm hidden flex items-center justify-center p-4" onclick="closeAddVoucherModal()">
+            <div class="bg-white w-full max-w-[90%] rounded-[24px] p-6 space-y-4 animate-zoom-in shadow-2xl" onclick="event.stopPropagation()">
+                <div class="flex justify-between items-center border-b border-slate-100 pb-3">
+                    <h3 id="voucher-modal-title" class="text-lg font-black text-[#1A303A] flex items-center gap-2">
+                        <i class="fa-solid fa-file-signature text-orange-400"></i> 新增預約憑證
+                    </h3>
+                    <button onclick="closeAddVoucherModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+                </div>
+                <div class="space-y-3 max-h-[50vh] overflow-y-auto no-scrollbar pr-1">
+                    <input type="hidden" id="voucher-id">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-400 mb-1">憑證項目標題 *</label>
+                        <input id="voucher-title" type="text" placeholder="例如: 小豆島渡輪預約號" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-[#1A303A]">
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-400 mb-1">時間區間或天數 *</label>
+                            <input id="voucher-time" type="text" placeholder="例如: 7/26 (週日)" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-[#1A303A]">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-400 mb-1">預約憑證代碼 *</label>
+                            <input id="voucher-code" type="text" placeholder="例如: 0407270902" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-[#1A303A]">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-400 mb-1">憑證圖片網址 (可選)</label>
+                        <input id="voucher-img" type="text" placeholder="https://..." class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-[#1A303A]">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-400 mb-1">憑證詳細備註</label>
+                        <textarea id="voucher-desc" placeholder="請填寫憑證的使用說明..." class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm h-20 resize-none focus:outline-[#1A303A]"></textarea>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3 pt-2 border-t border-slate-100">
+                    <button onclick="closeAddVoucherModal()" class="py-3 bg-slate-100 text-slate-600 font-bold rounded-xl text-sm">取消</button>
+                    <button onclick="submitVoucher()" class="py-3 bg-[#1A303A] text-white font-bold rounded-xl text-sm">儲存憑證</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // --- 烤吐司通知卡片 (替代阻斷性的 alert) ---
+        function showNotification(msg, type = "info") {
+            const container = document.createElement('div');
+            container.className = "absolute bottom-24 left-1/2 -translate-x-1/2 z-[99] px-6 py-3 rounded-2xl text-xs font-bold text-white shadow-xl animate-zoom-in transition-opacity duration-300 " + 
+                (type === "error" ? "bg-red-500" : "bg-[#1A303A]");
+            container.innerText = msg;
+            
+            // 附著在 App 容器內，保證行動端完美對齊
+            document.querySelector('.app-container').appendChild(container);
+            setTimeout(() => {
+                container.classList.add('opacity-0');
+                setTimeout(() => container.remove(), 300);
+            }, 2500);
+        }
+
+        // 匯率常數 (1 JPY = 0.052 MOP)
+        const JPY_TO_MOP = 0.052;
+
+        // 初始化記帳儲存區
+        let localExpenses = [
+            { id: 1, title: '一鶴骨付鳥晚餐', jpy: 8500, category: '餐飲', day: 'Day 1' },
+            { id: 2, title: '小豆島渡輪費用', jpy: 6800, category: '交通', day: 'Day 3' },
+            { id: 3, title: '道後溫泉土產', jpy: 4200, category: '購物', day: 'Day 5' }
+        ];
+
+        // 動態憑證資料庫
+        let localVouchers = [
+            { 
+                id: 1, 
+                category: "小豆島渡輪預約號", 
+                time: "7/26 (週日)", 
+                code: "0407270902", 
+                image: "https://i.ibb.co/gF3gbVXv/takamatsuship.webp",
+                content: "高松港往返小豆島土庄港汽車渡輪預約。必須於開航前 40 分鐘抵達售票處辦理車輛乘船登記。"
+            },
+            { 
+                id: 2, 
+                category: "去程航班託運憑證", 
+                time: "7/24 (週五)", 
+                code: "UO 642", 
+                image: "https://i.ibb.co/7NJ7ww9N/27-HKExpress-2.jpg",
+                content: "<b>去程行李政策細則 ✈️</b><br>• 託運行李：3人合共 2 件，總上限 20 kg。<br>• 隨身物品：3人合共 3 件（需符合航空公司隨身包限額尺寸）。"
+            },
+            { 
+                id: 3, 
+                category: "回程航班託運憑證", 
+                time: "7/30 (週四)", 
+                code: "UO 643", 
+                image: "https://i.ibb.co/7NJ7ww9N/27-HKExpress-2.jpg",
+                content: "<b>回程行李政策細則 ✈️</b><br>• 託運行李：3人合共 2 件，總上限 20 kg。<br>• 隨身物品：3人合共 3 件。<br>• 登機行李：3人合共 3 件（每件小於 7 kg）。"
+            },
+            { 
+                id: 4, 
+                category: "ETC 卡取用註冊", 
+                time: "7/24 (週五)", 
+                code: "臨櫃取借結算", 
+                image: "https://i.ibb.co/spwX63nk/26-car.jpg",
+                content: "辦理租車手續時，必須向櫃檯申請加購租用車載 ETC 卡。自駕回程時在租車櫃檯依過路費記錄實報實銷。"
+            }
+        ];
+
+        // 天氣座標
+        const weatherCoords = {
+            'Takamatsu': { lat: 34.34, lon: 134.05, name: '高松' },
+            'Tokushima': { lat: 34.07, lon: 134.55, name: '德島' },
+            'Shodoshima': { lat: 34.48, lon: 134.25, name: '小豆島' },
+            'Matsuyama': { lat: 33.84, lon: 132.76, name: '松山 / 今治' }
+        };
+
+        let currentDayFilter = 1;
+
+        // 解除開屏畫面
+        function dismissSplash() {
+            const splash = document.getElementById('splash-screen');
+            splash.classList.add('opacity-0', 'pointer-events-none');
+            setTimeout(() => {
+                splash.style.display = 'none';
+            }, 700);
+        }
+
+        // --- 靜態行程資料庫原始版 ---
+        const shikokuDb = {
+            overview: {
+                intro: "親愛的長輩與家人，歡迎來到四國！這是一片被瀨戶內海溫柔環抱、蘊含極致文化與慢活節奏的土地。我們將遊歷香川、德島與愛媛三縣。導遊 MIO MIO 針對您的體力進行了尊榮自駕優化，避開陡坡，保證全程冷氣與平坦步道，讓您舒適度度過愜意假期！",
+                flights: [
+                    { 
+                        date: "7/24 (五) 去程", 
+                        code: "UO 642", 
+                        route: "香港 (HKG) 10:00 ➔ 高松 (TAK) 14:45",
+                        details: "<b>去程行李政策細則 ✈️</b><br>• 託運行李：3人合共 2 件，總上限 20 kg。<br>• 隨身物品：3人合共 3 件（需符合航空公司隨身包限額尺寸）。"
+                    },
+                    { 
+                        date: "7/30 (四) 回程", 
+                        code: "UO 643", 
+                        route: "高松 (TAK) 15:30 ➔ 香港 (HKG) 18:25",
+                        details: "<b>回程行李政策細則 ✈️</b><br>• 託運行李：3人合共 2 件，總上限 20 kg。<br>• 隨身物品：3人合共 3 件。<br>• 登機行李：3人合共 3 件（每件小於 7 kg 可推入客艙，利於裝載最後採買之手信與免稅品）。"
+                    }
+                ],
+                hotels: [
+                    { 
+                        id: "hotel_d1_d6",
+                        day: "D1", 
+                        name: "高松大和ROYNET酒店", 
+                        address: "香川縣高松市丸之內 8-23", 
+                        tel: "+81 87-811-2233",
+                        image: "https://i.ibb.co/Hpnm3dVj/01b.jpg",
+                        gmaps: "https://www.google.com/maps/search/?api=1&query=高松大和ROYNET酒店",
+                        desc: "<b>酒店介紹 🏨</b><br>• <b>設施特點：</b> 位於市中心，房間採光極佳、配備空氣清新機與高雅衛浴設備。<br>• <b>自駕優勢：</b> 提供立體停車場。直通高松中央商店街，下樓即是名店骨付鳥與藥妝店，適合長輩夜間散步。"
+                    },
+                    { 
+                        id: "hotel_d2",
+                        day: "D2", 
+                        name: "德島JR大和ROYNET酒店", 
+                        address: "德島縣德島市寺島本町東 3-8", 
+                        tel: "+81 88-611-2233",
+                        image: "https://i.ibb.co/JwcWTY7N/01c.png",
+                        gmaps: "https://www.google.com/maps/search/?api=1&query=德島JR大和ROYNET酒店",
+                        desc: "<b>酒店介紹 🏨</b><br>• <b>設施特點：</b> 與德島車站直結，擁有絕佳的高層景觀與典雅的現代裝潢。位置優勢強大，是德島最高端住宿之一。"
+                    },
+                    { 
+                        id: "hotel_d3",
+                        day: "D3", 
+                        name: "edit x seven 小豆島精品公寓", 
+                        address: "香川小豆島町安田字植松甲144-235", 
+                        tel: "+81 80-1234-5678",
+                        image: "https://i.ibb.co/yFc8H7JK/01d.webp",
+                        gmaps: "https://www.google.com/maps/search/?api=1&query=edit+x+seven+小豆島",
+                        desc: "<b>酒店介紹 🏨</b><br>• <b>設施特點：</b> 超寬敞 51 平方米海景公寓。設有豪華廚房、露天觀海足療浴缸、專用露天游泳池與獨立乾蒸桑拿房。"
+                    },
+                    { 
+                        id: "hotel_d4",
+                        day: "D4", 
+                        name: "今治國際酒店", 
+                        address: "愛媛今治市旭町 2-3-4", 
+                        tel: "+81 898-36-1111",
+                        image: "https://i.ibb.co/GKMk44y/01e.jpg",
+                        gmaps: "https://www.google.com/maps/search/?api=1&query=今治國際酒店",
+                        desc: "<b>酒店介紹 🏨</b><br>• <b>設施特點：</b> 歐式挑高五星級地標酒店，設有室內大溫水泳池與桑拿，車位多且免費。"
+                    },
+                    { 
+                        id: "hotel_d5",
+                        day: "D5", 
+                        name: "道後溫泉 Funaya (ふなや)", 
+                        address: "愛媛松山市道後湯之町 1-33", 
+                        tel: "+81 89-947-0278",
+                        image: "https://i.ibb.co/qMt6wq0G/01f.jpg",
+                        gmaps: "https://www.google.com/maps/search/?api=1&query=道後温泉+ふなや",
+                        desc: "<b>酒店介紹 🏨</b><br>• <b>溫泉特點：</b> 擁有 390 年歷史，是道後最古老的皇家名宿。內有 1500 坪精美日式山水庭園與日式足湯。"
+                    },
+                    { 
+                        id: "hotel_d6",
+                        day: "D6", 
+                        name: "Dormy Inn 高松中央公園前", 
+                        address: "香川高松市天神前 1-10-1", 
+                        tel: "+81 87-832-5489",
+                        image: "https://i.ibb.co/5Xh0x3LS/01g.webp",
+                        gmaps: "https://www.google.com/maps/search/?api=1&query=Dormy+Inn+高松中央公園前",
+                        desc: "<b>酒店介紹 🏨</b><br>• <b>設施特點：</b> 頂樓附設天然溫泉大浴場，提供極致露天風呂，晚上免費提供現煮拉麵宵夜。"
+                    }
+                ]
+            },
+            days: [
+                {
+                    day: 1,
+                    date: "7/24 (週五)",
+                    location: "Takamatsu",
+                    title: "出發與抵達高松市區巡禮",
+                    slots: [
+                        {
+                            time: "06:00 - 09:30",
+                            title: "清晨出發 ➔ 經港珠澳大橋前往香港機場",
+                            category: "交通",
+                            desc: "清晨 06:00 由家裡出發（搭乘的士），經港珠澳大橋抵達大橋口岸，通關後轉乘巴士 B6 前往香港國際機場客運大樓（T2）。",
+                            image: "https://i.ibb.co/7NJ7ww9N/27-HKExpress-2.jpg",
+                            mapcode: "無需 Mapcode",
+                            gmaps: "https://www.google.com/maps/search/?api=1&query=香港國際機場",
+                            tips: "<b>港珠澳跨海體驗 🚌：</b><br>• <b>✨ 特色亮點：</b> 欣賞宏偉的跨海大橋日出海景。<br>• <b>💡 長輩備忘：</b> 請將證件放隨身包中最易提取處，通關更順利。"
+                        },
+                        {
+                            time: "10:00 - 14:45",
+                            title: "香港機場起飛 ➔ 降落高松機場",
+                            category: "交通",
+                            desc: "於香港國際機場登機。飛機於上午 10:00 正式起飛前往高松機場 (TAK)。航程約 3.5 小時，於下午 14:45 順暢降落。",
+                            image: "https://i.ibb.co/GvxsHRRv/1-airport.webp",
+                            mapcode: "60 541 333*22",
+                            gmaps: "https://www.google.com/maps/search/?api=1&query=高松空港",
+                            tips: "<b>飛行貼士 ✈️：</b><br>• <b>💡 體感防寒：</b> 機艙內冷氣較強，請務必幫長輩攜帶一件輕薄長袖外套。"
+                        },
+                        {
+                            time: "14:45 - 15:45",
+                            title: "高松機場取車與自駕手續辦理",
+                            category: "交通",
+                            desc: "降落高松機場。專車接送至租車櫃檯提取商務大車，行李上車，冷氣直送市區。",
+                            image: "https://i.ibb.co/spwX63nk/26-car.jpg",
+                            mapcode: "60 541 333*22",
+                            gmaps: "https://www.google.com/maps/search/?api=1&query=高松空港",
+                            tips: "<b>自駕重要手續 🚗：</b><br>• <b>✨ 手續必備：</b> 需出示澳門駕照與國際駕照。租車時請確認加購 ETC 卡。"
+                        },
+                        {
+                            driveTime: "🚗 乘車前往高松市區：約 30 分鐘"
+                        },
+                        {
+                            time: "16:00 - 16:30",
+                            title: "辦理入住：高松大和ROYNET酒店",
+                            category: "住宿",
+                            desc: "抵達飯店。辦理 Check-in 手續，將行李送至客房，讓長輩稍微洗臉、喝杯熱茶，在房內大沙發上歇息一會兒。",
+                            image: "https://i.ibb.co/Hpnm3dVj/01b.jpg",
+                            mapcode: "60 607 721*12",
+                            gmaps: "https://www.google.com/maps/search/?api=1&query=高松大和ROYNET酒店",
+                            tips: "<b>飯店 Check-in 🏨：</b><br>• <b>✨ 設施特點：</b> 房間空調強勁，提供舒適睡袍。"
+                        },
+                        {
+                            time: "16:30 - 18:30",
+                            title: "高松中央商店街散步",
+                            category: "景點",
+                            desc: "全日本最長的全拱廊商店街。路面平坦、全程有遮雨棚，設有極多休息長椅，是帶長輩感受日本氛圍、採買藥妝的最安全防曬首站。",
+                            image: "https://i.ibb.co/tpT9m2kz/3-shopping.jpg",
+                            mapcode: "60 607 431*11",
+                            gmaps: "https://www.google.com/maps/search/?api=1&query=高松中央商店街",
+                            tips: "<b>名鋪地圖與必逛指南 🛍️：</b><br>• <b>📍 Uniqlo & Standard Products：</b> 位於 Marugamemachi Green 大樓。<br>• <b>📍 藥妝松本清 / Muji / ABC Mart：</b> 皆在中段平坦路面上。<br>• <b>📍 唐吉訶德 & 永旺超級市場：</b> 買生活手信一流。"
+                        },
+                        {
+                            time: "18:30+",
+                            title: "晚餐：香川名物「骨付鳥 一鶴」",
+                            category: "餐飲",
+                            desc: "高松最具人氣的帶骨烤雞腿名店。雞腿經高溫窯烤香酥多汁，香氣無與倫比。",
+                            image: "https://i.ibb.co/SXYnBCGr/4-chicken.jpg",
+                            mapcode: "60 607 355*88",
+                            gmaps: "https://www.google.com/maps/search/?api=1&query=一鶴+高松店",
+                            tips: "<b>必點菜單 📋：</b>• <b>😋 頂級美味：</b> 幫長輩點選肉質細緻軟嫩的<b>「雛雞 (Hina)」</b>，好嚼又美味！"
+                        }
+                    ]
+                },
+                {
+                    day: 2,
+                    date: "7/25 (週六)",
+                    location: "Tokushima",
+                    title: "高松文化探索與德島名景",
+                    slots: [
+                        {
+                            time: "08:00 - 09:00",
+                            title: "活力早餐 ➔ 大和ROYNET和洋自助餐",
+                            category: "餐飲",
+                            desc: "在飯店內悠閒享用豐盛的和洋自助早餐，有多款香川在地野菜與烏龍麵可選，不用起早外出覓食，非常省力。",
+                            image: "https://i.ibb.co/Hpnm3dVj/01b.jpg",
+                            mapcode: "60 607 721*12",
+                            gmaps: "https://www.google.com/maps/search/?api=1&query=高松大和ROYNET酒店",
+                            tips: "<b>元氣早餐 ☕：</b>• <b>✨ 特色亮點：</b> 提供現定烏龍麵與溫熱玉子燒。"
+                        },
+                        {
+                            time: "10:00 - 11:30",
+                            title: "栗林公園與和船體驗",
+                            category: "景點",
+                            desc: "米其林三星名庭。安排搭乘日式「南湖周遊和船」（免步行），隨後在歷史悠久的茶屋「掬月亭」歇息，喝杯熱抹茶配精緻和菓子。",
+                            image: "https://i.ibb.co/kgTnrmrn/5-park.jpg",
+                            mapcode: "60 575 844*41",
+                            gmaps: "https://www.google.com/maps/search/?api=1&query=栗林公園",
+                            tips: "<b>米其林三星美景 🍵：</b><br>• <b>✨ 特色亮點：</b> 六十多萬坪幽靜黑松景觀，和船緩慢遊湖免去走路疲勞。<br>• <b>🛍️ 必買手信：</b> 園內掬月亭特色栗子煎餅。"
+                        },
+                        {
+                            driveTime: "🚗 跨縣自駕前往德島：約 75 分鐘"
+                        },
+                        {
+                            time: "14:30 - 15:30",
+                            title: "德島貓之王子神社",
+                            category: "景點",
+                            desc: "極其安寧祥和的「貓咪神社」，貓奴必朝聖。這裡供奉著溫馴親人的貓咪們，長輩可在幽靜的庭院拍下可愛貓影。",
+                            image: "https://i.ibb.co/6crH5rwW/4-dokushimajinja.jpg",
+                            mapcode: "56 061 552*33",
+                            gmaps: "https://www.google.com/maps/search/?api=1&query=王子神社+德島",
+                            tips: "<b>神社尋貓 🐈：</b><br>• <b>✨ 特色亮點：</b> 四國著名的求福神社，有十幾隻親人隨意躺臥的萌貓。"
+                        },
+                        {
+                            time: "15:30 - 16:00",
+                            title: "辦理入住：德島JR大和ROYNET酒店",
+                            category: "住宿",
+                            desc: "抵達德島飯店。辦理 Check-in 入住手續，安頓好大件行李，為長輩洗臉小憩，準備傍晚的眉山美景。",
+                            image: "https://i.ibb.co/JwcWTY7N/01c.png",
+                            mapcode: "56 062 110*45",
+                            gmaps: "https://www.google.com/maps/search/?api=1&query=德島JR大和ROYNET酒店",
+                            tips: "<b>飯店入住 🏨：</b><br>• <b>✨ 設施特點：</b> 與車站商場直通，購買補給極其省力。"
+                        },
+                        {
+                            time: "16:00 - 17:30",
+                            title: "眉山纜車俯瞰全市",
+                            category: "景點",
+                            desc: "搭乘雙線登山纜車，僅需 6 分鐘即可登頂眉山.山頂視野遼闊，能將德島全市、大鳴門橋的壯闊海天一色盡收眼底。",
+                            image: "https://i.ibb.co/21cmd8dt/7-ropewaydokushima.jpg",
+                            mapcode: "56 061 245*11",
+                            gmaps: "https://www.google.com/maps/search/?api=1&query=眉山ロープウェイ",
+                            tips: "<b>高空纜車 🚠：</b><br>• <b>✨ 特色亮點：</b> 雙軌封閉式客艙，免去長輩任何爬山體力。"
+                        }
+                    ]
+                },
+                {
+                    day: 3,
+                    date: "7/26 (週日)",
+                    location: "Shodoshima",
+                    title: "鳴門觀潮、渡輪小豆島",
+                    slots: [
+                        {
+                            time: "07:30 - 08:30",
+                            title: "早餐：待定 (視長輩庫存彈性自理)",
+                            category: "餐飲",
+                            desc: "德島市區內自理早餐，建議選擇飯店旁德島站商場內的精緻日式早餐店或特色麵包坊，吃完即出發前往鳴門。",
+                            image: "https://i.ibb.co/JwcWTY7N/01c.png",
+                            mapcode: "無需 Mapcode",
+                            gmaps: "",
+                            tips: "<b>早餐貼士 🍳：</b><br>• <b>💡 長輩胃口：</b> 推薦德島站內輕食飯糰或熱咖啡，暖胃好上路。"
+                        },
+                        {
+                            time: "09:15 - 11:30",
+                            title: "鳴門漩渦觀潮與渦之道",
+                            category: "景點",
+                            desc: "搭乘巨型平穩觀潮船，近距離感受世界知名的大漩渦。隨後漫步「渦之道」海上高空步道，從透明玻璃安全直視腳底湧浪。",
+                            image: "https://i.ibb.co/qF0pFXs2/8-round.jpg",
+                            mapcode: "406 220 441*11",
+                            gmaps: "https://www.google.com/maps/search/?api=1&query=渦之道",
+                            tips: "<b>世界級奇景 🌊：</b><br>• <b>✨ 特色亮點：</b> 鳴門海峽世界最大漩渦，大船極度平穩。"
+                        },
+                        {
+                            time: "11:30 - 13:00",
+                            title: "午餐：活魚料理 びんび家",
+                            category: "餐飲",
+                            desc: "德島最強海鮮食堂。新鮮厚切的生鯛魚刺身、剛出爐的烤活魚配上鮮度爆棚的海帶味噌湯。",
+                            image: "https://i.ibb.co/1t8HPd3z/9-fish.jpg",
+                            mapcode: "56 303 621*55",
+                            gmaps: "https://www.google.com/maps/search/?api=1&query=びんび家",
+                            tips: "<b>必點菜單 📋：</b>• <b>😋 頂級海鮮：</b> <b>「鯛魚刺身定食」</b>。魚肉極為甘甜，味噌湯鮮味四溢！"
+                        },
+                        {
+                            driveTime: "🚗 驅車返高松港渡輪口：約 60 分鐘"
+                        },
+                        {
+                            time: "14:15 - 15:10",
+                            title: "高松港 ➔ 辦理小豆島渡輪 Check-in",
+                            category: "交通",
+                            desc: "自駕抵達「高松港小豆島渡輪搭乘處」售票櫃檯辦理車輛登船登記，出示車輛行照並確認預約號，隨後聽從引導登船。",
+                            image: "https://i.ibb.co/gF3gbVXv/takamatsuship.webp",
+                            mapcode: "60 607 810*55",
+                            gmaps: "https://www.google.com/maps/search/?api=1&query=高松港+フェリー乗り場",
+                            tips: "<b>登船指南 ⛴️：</b><br>• <b>💡 登船注意：</b> 司機開車登入，其餘長輩可一同坐在車內登船，等車停穩後再上冷氣艙休眠。"
+                        },
+                        {
+                            time: "15:10 - 16:10",
+                            title: "渡輪航行中 ➔ 抵達小豆島土庄港",
+                            category: "交通",
+                            desc: "15:10 渡輪開航。60 分鐘航程極度安穩。16:10 抵達小豆島土庄港，下船開車直奔天使之路。",
+                            image: "https://i.ibb.co/wrpgdrGS/ship.jpg",
+                            mapcode: "364 881 223*66",
+                            gmaps: "https://www.google.com/maps/search/?api=1&query=土庄港",
+                            tips: "<b>航海補眠 💤：</b><br>• <b>💡 長輩小憩：</b> 船上有沙發冷氣，可放心補眠 1 小時。"
+                        },
+                        {
+                            time: "16:10 - 18:05",
+                            title: "小豆島天使之路浪漫散步",
+                            category: "景點",
+                            desc: "每日退潮限定浮現的浪漫沙灘。牽手走在金色沙洲，兩旁海水拍擊，靜觀海天一色。",
+                            image: "https://i.ibb.co/fG8KwF43/10-shikoku-shodoshima-angel-road.jpg",
+                            mapcode: "364 881 223*66",
+                            gmaps: "https://www.google.com/maps/search/?api=1&query=天使の散歩道",
+                            tips: "<b>浪漫沙丘 🌅：</b><br>• <b>✨ 特色亮點：</b> 潮汐退去後浮現的金黃細沙路，直通對岸小島，風景極美。"
+                        },
+                        {
+                            time: "18:30+",
+                            title: "入住：edit x seven 小豆島精品公寓",
+                            category: "住宿",
+                            desc: "抵達公寓辦理入住。在 51 平方米超大奢華公寓放鬆，配有奢華大餐桌與無障礙海景大落地窗。公寓擁有名品級的露天觀海足湯池、私人乾蒸桑拿房以及海景恆溫泳池（夏季開放）！",
+                            image: "https://i.ibb.co/yFc8H7JK/01d.webp",
+                            mapcode: "364 743 221*34",
+                            gmaps: "https://www.google.com/maps/search/?api=1&query=edit+x+seven+小豆島",
+                            tips: "<b>頂級溫泉SPA ♨️：</b><br>• <b>✨ 特色亮點：</b> 提供住客專屬的海風足療大浴缸及獨立桑拿烤房，適合長輩一邊吹海風一邊舒緩肌肉。"
+                        }
+                    ]
+                },
+                {
+                    day: 4,
+                    date: "7/27 (週一)",
+                    location: "Shodoshima",
+                    title: "小豆島深度遊、黃昏水族館",
+                    slots: [
+                        {
+                            time: "08:00 - 09:00",
+                            title: "早餐：edit x seven 精緻日式健康早餐盒",
+                            category: "餐飲",
+                            desc: "在無敵臨海大落地窗前，悠閒品嚐由公寓精心配備的日式晨光早餐盒。含有小豆島頂級初榨橄欖油調製的沙拉、低鹽玉子燒與手捏健康飯糰。",
+                            image: "https://i.ibb.co/yFc8H7JK/01d.webp",
+                            mapcode: "無需 Mapcode",
+                            gmaps: "",
+                            tips: "<b>海景早餐 ☕：</b>• <b>✨ 特色體驗：</b> 在陽光灑滿瀨戶內海的晨曦中喝杯暖胃熱茶，享受極致奢華的早晨。"
+                        },
+                        {
+                            time: "09:30 - 11:00",
+                            title: "小豆島橄欖公園 (白色風車)",
+                            category: "景點",
+                            desc: "魔女宅急便經典拍攝地。在希臘式純白大風車下，背靠湛藍大海，体验騎著魔法掃帚凌空飛翔的絕美童話照片。",
+                            image: "https://i.ibb.co/ym1Ffxjx/12-wind.jpg",
+                            mapcode: "364 712 110*00",
+                            gmaps: "https://www.google.com/maps/search/?api=1&query=小豆島オリーブ公園",
+                            tips: "<b>魔女飛翔 🧹：</b>• <b>✨ 特色亮點：</b> 超美希臘地中海風情純白風車。<br>• <b>🛍️ 必買手信：</b> 頂級第一道初榨小豆島橄欖油。"
+                        },
+                        {
+                            time: "11:15 - 12:15",
+                            title: "丸金醬油紀念館",
+                            category: "景點",
+                            desc: "踏入具有百年歷史的黑瓦木構大釀造廠，鋪鼻而來的是香醇濃郁的傳統木桶發酵醬油香，帶長輩欣賞百年大醬油杉桶的壯觀景象。",
+                            image: "https://i.ibb.co/NnYQRYP5/soyasauce.jpg",
+                            mapcode: "364 712 811*32",
+                            gmaps: "https://www.google.com/maps/search/?api=1&query=マルキン醤油記念館",
+                            tips: "<b>百年老香 🏺：</b>• <b>✨ 特色亮點：</b> 百年釀造文化登錄有形文化財。<br>• <b>😋 必吃美食：</b> 鹹甜平衡、奶香乳醇的傳奇<b>「丸金醬油霜淇淋」</b>！"
+                        },
+                        {
+                            time: "12:30 - 13:30",
+                            title: "午餐：窯烤薄餅 Pizza Kamos",
+                            category: "餐飲",
+                            desc: "在小豆島溫馨的知名古民家店，品嚐以在地天然發酵小豆島醬油、酒粕等元素融入柴燒石窯，現烤出爐的拿坡里柴燒披薩。",
+                            image: "https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=600&q=80",
+                            mapcode: "364 742 110*02",
+                            gmaps: "https://tabelog.com/tw/kagawa/A3705/A370501/dtlmap/",
+                            tips: "<b>窯烤披薩 🍕：</b>• <b>😋 頂級美味：</b> 醬油與酒粕起司比薩，餅皮軟Q有網烤焦香，長輩亦極為合胃口。"
+                        },
+                        {
+                            time: "13:45 - 14:15",
+                            title: "極上甜品：MINORI GELATO 義式雪糕",
+                            category: "餐飲",
+                            desc: "小豆島超高評價的意式雪糕店，選用小豆島本地名產如醬油、橄欖、酒粕與瀨戶內柑橘等新鮮食材製作。",
+                            image: "https://i.ibb.co/LdVF6tyB/640x640-rect-aa8d782d4d700bc93cce36480c7c2832.jpg",
+                            mapcode: "364 741 455*12",
+                            gmaps: "https://www.google.com/maps/search/?api=1&query=MINORI+GELATO",
+                            tips: "<b>奢華意式雪糕 🍦：</b>• <b>😋 推薦必點：</b> 招牌「醬油味」與「香草橄欖油味」，鹹香帶甜，口感綿密絲滑！"
+                        },
+                        {
+                            time: "14:15 - 15:45",
+                            title: "土庄港 ➔ 搭乘汽車渡輪返航高松",
+                            category: "交通",
+                            desc: "自駕抵達土庄港。必須於 14:25 前抵達土庄港完成登船購票與手續。14:45 準時開航返回高松。",
+                            image: "https://i.ibb.co/wrpgdrGS/ship.jpg",
+                            mapcode: "364 881 223*66",
+                            gmaps: "https://www.google.com/maps/search/?api=1&query=土庄港",
+                            tips: "<b>離港須知 ⛴️：</b>• <b>💡 貼心關懷：</b> 提早抵達買票安全第一，長輩可免受烈日直曬之苦。"
+                        },
+                        {
+                            driveTime: "🚗 下船自駕往水族館：約 35 分鐘"
+                        },
+                        {
+                            time: "16:40 - 18:45",
+                            title: "四國水族館夕陽秀",
+                            category: "景點",
+                            desc: "高松港下船後自駕 35 分鐘，抵達最避暑的傍晚入館。全館有無障礙通道與冷氣。亮點是 18:30 暑期限定、以染紅的瀨戶內海為動態背景的海豚秀。",
+                            image: "https://i.ibb.co/wrxcLwRS/14-aqua.jpg",
+                            mapcode: "355 123 445*22",
+                            gmaps: "https://www.google.com/maps/search/?api=1&query=四国水族館",
+                            tips: "<b>夕陽海豚 🐬：</b>• <b>✨ 特色亮點：</b> 絕美無邊際看台，看海豚躍入瀨戶內海紅霞背景！<br>• <b>🐬 觀賞亮點：</b> 還可近距離觀賞可愛水獺餵食、皇帝企鵝在頭頂玻璃游水。"
+                        },
+                        {
+                            driveTime: "🚗 下館後自駕往今治：約 75 分鐘"
+                        },
+                        {
+                            time: "20:00 - 20:30",
+                            title: "辦理入住：今治國際酒店",
+                            category: "住宿",
+                            desc: "自駕一小時抵達今治地標五星酒店，辦理入住手續。高挑氣派大堂能洗滌一整天的塵埃。",
+                            image: "https://i.ibb.co/GKMk44y/01e.jpg",
+                            mapcode: "211 442 110*41",
+                            gmaps: "https://www.google.com/maps/search/?api=1&query=今治國際酒店",
+                            tips: "<b>五星尊榮 🏨：</b>• <b>✨ 設施特點：</b> 房間超寬敞，附設日式大浴場與室內溫水泳池。"
+                        }
+                    ]
+                },
+                {
+                    day: 5,
+                    date: "7/28 (週二)",
+                    location: "Matsuyama",
+                    title: "毛巾美術館、道後溫泉神話",
+                    slots: [
+                        {
+                            time: "08:00 - 09:00",
+                            title: "活力早餐 ➔ 今治國際酒店豪華自助餐",
+                            category: "餐飲",
+                            desc: "在飯店享用高水準和洋早餐，名廚現做香軟歐姆蛋、現榨果汁及多款今治特選早茶點心。",
+                            image: "https://i.ibb.co/GKMk44y/01e.jpg",
+                            mapcode: "211 442 110*41",
+                            gmaps: "https://www.google.com/maps/search/?api=1&query=今治國際酒店",
+                            tips: "<b>元氣早餐 ☕：</b>• <b>✨ 設施特點：</b> 採光無敵，長輩用餐極其放鬆舒暢。"
+                        },
+                        {
+                            time: "10:30 - 12:30",
+                            title: "今治毛巾美術館",
+                            category: "景點",
+                            desc: "結合極致編織工藝與卡通嚕嚕米的夢幻展館。全室內有無障礙通道，冷氣舒爽，非常適合避暑。",
+                            image: "https://i.ibb.co/FRLccHy/16-towelmuseum.jpg",
+                            mapcode: "211 442 110*41",
+                            gmaps: "https://www.google.com/maps/search/?api=1&query=タオル美術館",
+                            tips: "<b>今治名織 🧸：</b>• <b>✨ 特色亮點：</b> 40 米棉線漸變牆，長輩漫步極度清爽防曬。<br>• <b>🛍️ 必買手信：</b> 日本品質第一「今治刺繡手帕/毛巾」。"
+                        },
+                        {
+                            time: "12:45 - 14:00",
+                            title: "順路午餐：仙ざん（Senzan）今治料理",
+                            category: "餐飲",
+                            desc: "從美術館往松山路上，順路拜訪當地的名物老店「仙ざん」，品嚐最道地的今治名物「炸雞（Senzanki）」與當日撈捕的瀨戶內海鯛魚釜飯定食。",
+                            image: "https://i.ibb.co/RpjWK8f1/17-towelmeal.jpg",
+                            mapcode: "211 511 422*11",
+                            gmaps: "https://www.google.com/maps/search/?api=1&query=仙ざん+今治",
+                            tips: "<b>名物午餐 🍱：</b>• <b>😋 推薦必點：</b> <b>「鯛魚釜飯定食」</b>與<b>「今治燒雞」</b>。牙口不好的長輩也讚不絕口！"
+                        },
+                        {
+                            driveTime: "🚗 自駕前往松山道後：約 50 分鐘"
+                        },
+                        {
+                            time: "15:30 - 16:30",
+                            title: "入住 390 年皇家名宿「ふなや」",
+                            category: "住宿",
+                            desc: "正式抵達松山道後，入住擁有 390 年歷史的頂級皇家溫泉名宿「ふなや」。日式山水庭園溪流優雅迷人。",
+                            image: "https://i.ibb.co/SD5ctHQp/19-funaya.jpg",
+                            mapcode: "53 349 712*55",
+                            gmaps: "https://www.google.com/maps/search/?api=1&query=ふなや+道後温泉",
+                            tips: "<b>皇家溫泉宿 ♨️：</b>• <b>✨ 溫泉設施特點：</b> 擁有松山道後引以為傲的百分百天然溫泉泉源，大浴場設有安全把手與防滑石材。"
+                        },
+                        {
+                            time: "16:45 - 18:15",
+                            title: "道後老街散步",
+                            category: "景點",
+                            desc: "慢步至著名的平坦道後老街散步。觀看「少爺機械鐘」在整點響起音樂起舞演出，整棟少爺鐘會向上升起變形，十分震撼。",
+                            image: "https://i.ibb.co/4Rm8fmvM/18-onsen.jpg",
+                            mapcode: "53 349 744*12",
+                            gmaps: "https://www.google.com/maps/search/?api=1&query=道後溫泉本館",
+                            tips: "<b>古老溫泉老街 🕰️：</b>• <b>✨ 特色亮點：</b> 神隱少女本館原型，街道古色古香。<br>• <b>🛍️ 必買手信：</b> 「一六本舖」松山名物柚子蛋糕卷（Ichiroku Tart）。"
+                        }
+                    ]
+                },
+                {
+                    day: 6,
+                    date: "7/29 (週三)",
+                    location: "Takamatsu",
+                    title: "空中索道登城與頂級燒肉",
+                    slots: [
+                        {
+                            time: "08:00 - 09:00",
+                            title: "溫馨早餐 ➔ ふなや極上和風朝食",
+                            category: "餐飲",
+                            desc: "在老字號ふなや優雅享用由女將親自服務端上的極上日式傳統朝食。一小碟一小碟由松山在地新鮮食材手工製作的料理，精緻優雅。",
+                            image: "https://i.ibb.co/SD5ctHQp/19-funaya.jpg",
+                            mapcode: "53 349 712*55",
+                            gmaps: "https://www.google.com/maps/search/?api=1&query=ふなや+道後温泉",
+                            tips: "<b>日式朝食 🍱：</b>• <b>✨ 特色體驗：</b> 享用宇和島吻仔魚配越光米、道後手工豆腐，暖胃好消化。"
+                        },
+                        {
+                            time: "11:00 - 13:00",
+                            title: "松山城 (空中索道直達)",
+                            category: "景點",
+                            desc: "搭乘空中封閉式平穩索道直登松山城，免去爬坡累贅。在城前平坦廣場遠眺瀨戶內海與松山市容。",
+                            image: "https://i.ibb.co/bM5BRm2Z/20-matsuyamacastle.webp",
+                            mapcode: "53 318 412*00",
+                            gmaps: "https://www.google.com/maps/search/?api=1&query=松山城索道站",
+                            tips: "<b>空中登城 🚠：</b>• <b>✨ 特色亮點：</b> 箱型密閉大纜車 3 分鐘平穩登頂，山頂廣場極度平坦。"
+                        },
+                        {
+                            driveTime: "🚗 自駕出發返香川：車程中途約 60 分鐘"
+                        },
+                        {
+                            time: "14:15 - 15:00",
+                            title: "中途休憩：豐濱服務區 (Toyohama SA)",
+                            category: "景點",
+                            desc: "位於愛媛與香川交界處的黃金高速公路休息大站。設有寬敞的草坪觀觀台與大面積落地窗休息區，是欣賞瀨戶內海黃昏落日海景的頂級地點。",
+                            image: "https://i.ibb.co/RTDw660s/22-sa.jpg",
+                            mapcode: "76 384 112*45",
+                            gmaps: "https://www.google.com/maps/search/?api=1&query=豐濱服務區",
+                            tips: "<b>公路海景大站 🌅：</b>• <b>✨ 特色亮點：</b> 無障礙海景平台，飽覽燧灘壯麗餘暉。<br>• <b>😋 必吃美食：</b> 豐濱SA限定おいり(Oiri)嫁入霜淇淋！在極濃牛奶霜淇淋上，灑滿香川傳統五彩繽紛、入口即化的圓形糯米球。"
+                        },
+                        {
+                            driveTime: "🚗 繼續自駕行駛：約 50 分鐘"
+                        },
+                        {
+                            time: "16:15+",
+                            title: "入住：Dormy Inn 高松中央公園前",
+                            category: "住宿",
+                            desc: "自駕返回高松。抵達後入住 Dormy Inn 高松中央公園前。大廳乾淨明亮。晚上 21:30 可以帶長輩去頂樓享受天然溫泉「玉藻之湯」，隨後去一樓吃免費醬油拉麵宵夜。",
+                            image: "https://i.ibb.co/5Xh0x3LS/01g.webp",
+                            mapcode: "60 607 112*34",
+                            gmaps: "https://www.google.com/maps/search/?api=1&query=Dormy+Inn+高松中央公園前",
+                            tips: "<b>天然溫泉宿 🏨：</b>• <b>✨ 設施特點：</b> 設有無障礙無台階客房。大浴場附高溫桑拿與極致露天風呂，能徹底洗去旅行多日疲勞。"
+                        },
+                        {
+                            time: "18:15+",
+                            title: "慶功晚餐：高松文八燒肉",
+                            category: "餐飲",
+                            desc: "日本 TabeLog 百名店推薦黑毛和牛名店。主打以橄欖飼育的頂級「小豆島橄欖牛」。",
+                            image: "https://i.ibb.co/pj42TZsk/000BEEF.jpg",
+                            mapcode: "60 607 112*34",
+                            gmaps: "https://www.google.com/maps/search/?api=1&query=燒肉+文八+高松",
+                            tips: "<b>必點菜單 📋：</b><b>「橄欖牛菲力」</b>。肉質極度細緻柔嫩、油脂鮮甜入口即化，對長輩牙口極其友好！"
+                        }
+                    ]
+                },
+                {
+                    day: 7,
+                    date: "7/30 (週四)",
+                    location: "Takamatsu",
+                    title: "烏龍麵巡禮與順暢歸家",
+                    slots: [
+                        {
+                            time: "09:30 - 11:00",
+                            title: "手打十段 烏龍麵Baka一代",
+                            category: "餐飲",
+                            desc: "香川高松朝朝第一名烏龍麵店。手工現打烏龍麵極致Q彈有勁，與生蛋和黑胡椒激盪美妙火花。",
+                            image: "https://i.ibb.co/Z6jktfZR/24-udon.jpg",
+                            mapcode: "60 607 889*11",
+                            gmaps: "https://www.google.com/maps/search/?api=1&query=うどんバカ一代",
+                            tips: "<b>必點菜單 📋：</b><b>「溫奶油牛油黑胡椒烏龍麵」</b>！若排隊長於 20 分鐘，將立即啟動備案改往免久候的<b>「上原屋本店」</b>。"
+                        },
+                        {
+                            time: "12:00 - 13:00",
+                            title: "加油還車與前往機場準備搭機",
+                            category: "交通",
+                            desc: "於租車點旁加油站加滿油、順暢還車。車行派專車接送至高松機場大廳辦理寄艙通關。飛機於 15:30 起飛，18:25 順利返抵香港，結束四國自駕遊。",
+                            image: "https://i.ibb.co/spwX63nk/26-car.jpg",
+                            mapcode: "60 541 333*22",
+                            gmaps: "https://www.google.com/maps/search/?api=1&query=高松空港",
+                            tips: "<b>安全歸家 ✈️：</b><br>• <b>💡 出境提醒：</b> 還車油單收據請留給櫃台核對。入關後可在機場免稅店作最後採購，滿載而歸！"
+                        }
+                    ]
+                }
+            ]
+        };
+
+        // --- 初始化動態變數託管與儲存 ---
+        let localDays = [];
+
+        // --- URL安全之編解碼模組 (支援 Gzip & Base64) ---
+        function encodeData(dataObj) {
+            const jsonStr = JSON.stringify(dataObj);
+            return btoa(unescape(encodeURIComponent(jsonStr)));
+        }
+
+        function decodeData(base64Str) {
+            const jsonStr = decodeURIComponent(escape(atob(base64Str)));
+            return JSON.parse(jsonStr);
+        }
+
+        // 載入本地 LocalStorage 數據
+        function loadAllData() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const tripData = urlParams.get('trip');
+            if (tripData) {
+                try {
+                    window.pendingTripData = tripData;
+                } catch (e) {
+                    console.error("解析分享代碼出錯", e);
+                }
+            }
+
+            const storedDays = localStorage.getItem('shikoku_days_v1');
+            const storedExpenses = localStorage.getItem('shikoku_expenses_v1');
+            const storedVouchers = localStorage.getItem('shikoku_vouchers_v1');
+
+            if (storedDays) {
+                localDays = JSON.parse(storedDays);
+            } else {
+                localDays = JSON.parse(JSON.stringify(shikokuDb.days));
+            }
+
+            if (storedExpenses) {
+                localExpenses = JSON.parse(storedExpenses);
+            }
+
+            if (storedVouchers) {
+                localVouchers = JSON.parse(storedVouchers);
+            }
+        }
+
+        // 保存目前所有狀態至 LocalStorage
+        function saveAllToStorage() {
+            localStorage.setItem('shikoku_days_v1', JSON.stringify(localDays));
+            localStorage.setItem('shikoku_expenses_v1', JSON.stringify(localExpenses));
+            localStorage.setItem('shikoku_vouchers_v1', JSON.stringify(localVouchers));
+        }
+
+        // 家人分享網址匯入確認
+        function acceptImport() {
+            try {
+                const importedData = decodeData(window.pendingTripData);
+                if (importedData.days && importedData.expenses && importedData.vouchers) {
+                    if (importedData.days !== "DEFAULT") {
+                        localDays = importedData.days;
+                    } else {
+                        localDays = JSON.parse(JSON.stringify(shikokuDb.days));
+                    }
+                    localExpenses = importedData.expenses;
+                    localVouchers = importedData.vouchers;
+                    saveAllToStorage();
+                    showNotification("📥 成功載入家人同步的最新自駕行程！");
+                    setTimeout(() => {
+                        window.location.href = window.location.origin + window.location.pathname;
+                    }, 1200);
+                } else {
+                    showNotification("數據解析異常，格式不符", "error");
+                }
+            } catch (e) {
+                showNotification("載入失敗，代碼可能不完整", "error");
+            }
+        }
+
+        function rejectImport() {
+            document.getElementById('import-modal').classList.add('hidden');
+            window.history.replaceState({}, document.title, window.location.pathname);
+            showNotification("已維持本地目前的日程紀錄。");
+        }
+
+        // 產生同步分享連結 (精簡型)
+        window.generateShareLink = function() {
+            const defaultDaysStr = JSON.stringify(shikokuDb.days);
+            const currentDaysStr = JSON.stringify(localDays);
+            
+            const packageData = {
+                expenses: localExpenses,
+                vouchers: localVouchers
+            };
+
+            if (defaultDaysStr !== currentDaysStr) {
+                packageData.days = localDays;
+            } else {
+                packageData.days = "DEFAULT";
+            }
+
+            try {
+                const encoded = encodeData(packageData);
+                const shareUrl = window.location.origin + window.location.pathname + "?trip=" + encoded;
+                document.getElementById('share-url-text').value = shareUrl;
+                document.getElementById('share-modal').classList.remove('hidden');
+            } catch(e) {
+                showNotification("加密同步代碼失敗", "error");
+            }
+        };
+
+        window.closeShareModal = function() {
+            document.getElementById('share-modal').classList.add('hidden');
+        };
+
+        window.copyGeneratedLink = function() {
+            const urlText = document.getElementById('share-url-text').value;
+            const bSuccess = copyToClipboard(urlText);
+            if (bSuccess) {
+                showNotification("📋 分享連結複製成功！快發到群組吧。");
+                closeShareModal();
+            } else {
+                showNotification("複製失敗，請手動全選複製", "error");
+            }
+        };
+
+        function copyToClipboard(text) {
+            const textArea = document.createElement("textarea");
+            textArea.value = text;
+            textArea.style.top = "0";
+            textArea.style.left = "0";
+            textArea.style.position = "fixed";
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            let success = false;
+            try {
+                success = document.execCommand('copy');
+            } catch (err) {
+                console.error("Fallback copy failed", err);
+            }
+            document.body.removeChild(textArea);
+            return success;
+        }
+
+        // --- 導覽流程與頁面切換控制 ---
+        function switchTab(tabId) {
+            const buttons = document.querySelectorAll('nav button');
+            buttons.forEach(btn => btn.className = "flex flex-col items-center gap-1 text-slate-400 transition-colors");
+            
+            const activeBtn = document.getElementById(`nav-${tabId}`);
+            if (activeBtn) {
+                activeBtn.className = "flex flex-col items-center gap-1 text-[#1A303A] active-tab transition-colors";
+            }
+
+            const viewport = document.getElementById('app-viewport');
+            
+            if (tabId === 'overview') {
+                renderOverview(viewport);
+            } else if (tabId === 'itinerary') {
+                renderItinerary(viewport);
+            } else if (tabId === 'vouchers') {
+                renderVouchers(viewport);
+            } else if (tabId === 'wallet') {
+                renderWallet(viewport);
+            } else if (tabId === 'emergency') {
+                renderEmergency(viewport);
+            }
+            
+            // 重新渲染 LaTeX 數學符號
+            setTimeout(() => {
+                if (window.renderMathInElement) {
+                    renderMathInElement(viewport);
+                }
+            }, 50);
+
+            // 滾動回到視窗最上方
+            viewport.scrollTop = 0;
+        }
+
+        // --- 1. 概覽頁面 ---
+        function renderOverview(viewport) {
+            let flightsHtml = shikokuDb.overview.flights.map((f, idx) => `
+                <div class="p-3 bg-white border border-[#E2DCD5] rounded-xl flex items-start gap-3 cursor-pointer hover:bg-slate-50 transition-colors" onclick="openFlightModal(${idx})">
+                    <div class="bg-blue-50 text-[#1A303A] w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 text-sm">
+                        <i class="fa-solid fa-plane animate-pulse"></i>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <span class="text-[9px] font-black text-[#1A303A] tracking-wider block bg-blue-50/60 border border-blue-100 px-2 py-0.5 rounded-md inline-block mb-1">${f.date}</span>
+                        <h4 class="font-bold text-slate-800 flex items-center justify-between text-sm">
+                            <span>${f.code}</span>
+                            <span class="text-[10px] text-slate-400 font-normal">行李政策 <i class="fa-solid fa-chevron-right ml-0.5 text-[8px]"></i></span>
+                        </h4>
+                        <p class="text-xs text-slate-500 font-medium truncate">${f.route}</p>
+                    </div>
+                </div>
+            `).join('');
+
+            let hotelsHtml = shikokuDb.overview.hotels.map((h, idx) => `
+                <div class="flex flex-col gap-2 bg-white border border-[#E2DCD5] p-3 rounded-xl hover:border-slate-400 transition-all cursor-pointer" onclick="openHotelModal(${idx})">
+                    <div class="flex items-center gap-3">
+                        <div class="w-14 h-11 rounded-lg overflow-hidden flex-shrink-0 border border-slate-100 relative bg-slate-50">
+                            <img src="${h.image}" class="w-full h-full object-cover">
+                        </div>
+                        <div class="min-w-0 flex-1">
+                            <div class="flex items-center justify-between">
+                                <span class="text-[9px] font-black text-slate-400 bg-slate-100 px-1 py-0.5 rounded">${h.day} 下榻</span>
+                                <span class="text-[9px] text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded font-black">詳情 <i class="fa-solid fa-chevron-right text-[7px]"></i></span>
+                            </div>
+                            <h4 class="font-black text-slate-800 text-xs truncate">${h.name}</h4>
+                            <p class="text-[10px] text-slate-500 truncate mt-0.5"><i class="fa-solid fa-location-dot mr-1"></i>${h.address}</p>
+                        </div>
+                    </div>
+                    <div class="pt-1.5 border-t border-[#FAF8F5]">
+                        <a href="${h.gmaps}" target="_blank" onclick="event.stopPropagation()" class="w-full py-2 bg-[#FAF8F5] hover:bg-[#FAF8F5]/80 text-[#1A303A] border border-[#E2DCD5] font-bold rounded-lg text-center block text-[11px] tracking-wider transition">
+                            <i class="fa-solid fa-map-location-dot mr-1 text-orange-400"></i> 一鍵開啟 Google Map 導航
+                        </a>
+                    </div>
+                </div>
+            `).join('');
+
+            viewport.innerHTML = `
+                <!-- 標題與簡介卡 -->
+                <div class="bg-white rounded-2xl overflow-hidden border border-[#E2DCD5] shadow-sm">
+                    <div class="p-4 space-y-3">
+                        <div class="flex justify-between items-center">
+                            <span class="text-[10px] font-black tracking-widest text-[#1A303A] bg-slate-100 px-2 py-0.5 rounded-full uppercase">shikoku2026</span>
+                            <span class="text-[10px] font-bold text-slate-400">7 Days Itinerary</span>
+                        </div>
+                        <h2 class="text-xl font-black text-slate-900 tracking-wide">四國2026自駕遊</h2>
+                        <p class="text-[10px] font-bold text-orange-500 uppercase tracking-widest block bg-orange-50 border border-orange-100 px-2 py-0.5 rounded-md inline-block">2026.07.24 - 07.30</p>
+                        <p class="text-slate-600 text-xs leading-relaxed font-normal">${shikokuDb.overview.intro}</p>
+                    </div>
+                </div>
+
+                <!-- 🔄 雲端一鍵同步卡 -->
+                <div class="bg-gradient-to-br from-[#1A303A] to-[#2e4754] text-white rounded-2xl p-4 shadow-sm space-y-3 relative overflow-hidden">
+                    <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-orange-400/10 via-transparent to-transparent"></div>
+                    <div class="relative z-10 space-y-1">
+                        <span class="text-[9px] font-bold text-orange-200 tracking-wider uppercase">Cloud Sync</span>
+                        <h3 class="text-sm font-black">同步行程與開銷給家人</h3>
+                        <p class="text-[10px] text-slate-300 leading-relaxed">
+                            點擊下方按鈕即可生成精簡連結，直接貼到 WhatsApp/LINE 群組，家人點開一秒更新同步！
+                        </p>
+                        <button onclick="generateShareLink()" class="w-full py-2 bg-white text-[#1A303A] font-extrabold rounded-xl text-xs tracking-wider uppercase hover:bg-slate-100 active:scale-95 transition-all flex items-center justify-center gap-2 shadow-md">
+                            <i class="fa-solid fa-share-nodes"></i> 產生全家同步網址
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 航班快訊 -->
+                <div class="space-y-2">
+                    <h3 class="text-[10px] font-black tracking-widest text-slate-400 uppercase">航班與行李限額 (點擊看詳情)</h3>
+                    <div class="grid grid-cols-1 gap-2">
+                        ${flightsHtml}
+                    </div>
+                </div>
+
+                <!-- 住宿快速導航 -->
+                <div class="space-y-2">
+                    <h3 class="text-[10px] font-black tracking-widest text-slate-400 uppercase">每日下榻酒店導航</h3>
+                    <div class="grid grid-cols-1 gap-2.5">
+                        ${hotelsHtml}
+                    </div>
+                </div>
+            `;
+        }
+
+        // --- 彈出航班模組 ---
+        function openFlightModal(idx) {
+            const f = shikokuDb.overview.flights[idx];
+            const modal = document.getElementById('detail-modal');
+            const content = document.getElementById('modal-content');
+
+            content.innerHTML = `
+                <div class="space-y-1">
+                    <span class="text-xs font-black text-blue-900 bg-blue-50 px-2 py-0.5 rounded">航空行李政策</span>
+                    <h3 class="text-base font-black text-slate-900">${f.code} | ${f.date}</h3>
+                    <p class="text-xs text-slate-500 font-medium">${f.route}</p>
+                </div>
+                <div id="modal-latex-render" class="p-4 bg-blue-50/60 border border-blue-100 rounded-xl space-y-2 leading-relaxed text-xs text-slate-700 font-normal">
+                    ${f.details}
+                </div>
+            `;
+            modal.classList.remove('hidden');
+            if (window.renderMathInElement) {
+                renderMathInElement(document.getElementById('modal-latex-render'));
+            }
+        }
+
+        // --- 彈出酒店模組 ---
+        function openHotelModal(idx) {
+            const h = shikokuDb.overview.hotels[idx];
+            const modal = document.getElementById('detail-modal');
+            const content = document.getElementById('modal-content');
+
+            content.innerHTML = `
+                <div class="space-y-1">
+                    <span class="text-[9px] font-black text-indigo-900 bg-indigo-50 px-2 py-0.5 rounded">${h.day} 下榻</span>
+                    <h3 class="text-base font-black text-slate-900">${h.name}</h3>
+                    <p class="text-[11px] text-slate-500"><i class="fa-solid fa-location-dot"></i> ${h.address}</p>
+                    <p class="text-[11px] text-slate-500"><i class="fa-solid fa-phone"></i> ${h.tel}</p>
+                </div>
+                <div class="h-32 rounded-xl overflow-hidden bg-slate-100 border border-slate-200 relative">
+                    <img src="${h.image}" class="w-full h-full object-cover">
+                </div>
+                <div id="hotel-latex-render" class="p-3 bg-slate-50 border border-slate-100 rounded-xl text-xs text-slate-700 space-y-1.5 leading-relaxed font-normal">
+                    ${h.desc}
+                </div>
+                <div class="pt-1">
+                    <a href="${h.gmaps}" target="_blank" class="w-full py-2 bg-[#1A303A] text-white font-bold rounded-xl text-center block text-xs tracking-wider shadow-md hover:bg-slate-800"><i class="fa-solid fa-map-location-dot"></i> 開啟 Google Map 導航</a>
+                </div>
+            `;
+            modal.classList.remove('hidden');
+            if (window.renderMathInElement) {
+                renderMathInElement(document.getElementById('hotel-latex-render'));
+            }
+        }
+
+        // --- 2. 行程頁面 ---
+        function renderItinerary(viewport) {
+            let dayButtons = localDays.map(d => `
+                <button onclick="changeDayFilter(${d.day})" class="flex-shrink-0 px-4 py-2 rounded-full font-black text-xs tracking-wider transition-all ${currentDayFilter === d.day ? 'bg-[#1A303A] text-white shadow-md' : 'bg-white text-slate-600 border border-[#E2DCD5]'}">
+                    DAY 0${d.day}
+                </button>
+            `).join('');
+
+            viewport.innerHTML = `
+                <!-- 天數快選滑動列 -->
+                <div class="flex gap-2 overflow-x-auto no-scrollbar pb-1 px-1">
+                    ${dayButtons}
+                </div>
+
+                <!-- 天氣看板 -->
+                <div id="weather-banner" class="bg-gradient-to-br from-[#1A303A] to-blue-950 text-white p-4 rounded-xl shadow-sm flex justify-between items-center border border-white/10 relative overflow-hidden">
+                    <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-blue-800/10 via-transparent to-transparent"></div>
+                    <div class="relative z-10">
+                        <span class="text-[8px] font-black text-blue-200 tracking-widest uppercase">Real-Time Weather</span>
+                        <h4 id="weather-city" class="text-base font-black mt-0.5">正在獲取實時天氣...</h4>
+                        <p id="weather-desc" class="text-[10px] text-slate-300 mt-0.5">連線氣象衛星中</p>
+                    </div>
+                    <div class="relative z-10 text-right">
+                        <div id="weather-temp" class="text-2xl font-black tracking-tighter">--°C</div>
+                        <span id="weather-wind" class="text-[9px] text-blue-200">風速: -- km/h</span>
+                    </div>
+                </div>
+
+                <!-- 每日行程列表 -->
+                <div id="day-slots-container" class="space-y-4">
+                    <!-- JS 動態注入卡片 -->
+                </div>
+
+                <!-- ➕ 新增自定義行程按鈕 -->
+                <button onclick="openAddEventModal()" class="w-full py-3.5 border border-dashed border-[#E2DCD5] hover:border-[#1A303A] text-slate-500 hover:text-[#1A303A] font-bold rounded-xl transition flex items-center justify-center gap-2 mt-2 bg-white/50 text-xs">
+                    <i class="fa-solid fa-calendar-plus text-orange-400 text-sm"></i>
+                    <span>新增自定義行程</span>
+                </button>
+            `;
+
+            renderDaySlots();
+            fetchWeather();
+        }
+
+        window.changeDayFilter = function(dayNum) {
+            currentDayFilter = dayNum;
+            const viewport = document.getElementById('app-viewport');
+            renderItinerary(viewport);
+        };
+
+        function renderDaySlots() {
+            const container = document.getElementById('day-slots-container');
+            const currentDayObj = localDays.find(d => d.day === currentDayFilter);
+            if (!container || !currentDayObj) return;
+
+            let html = currentDayObj.slots.map((slot, index) => {
+                if (slot.driveTime) {
+                    return `
+                        <div class="flex items-center justify-center py-1">
+                            <span class="bg-[#FAF8F5] text-[#1A303A] border border-[#E2DCD5] rounded-full px-4 py-1 text-[10px] font-bold tracking-wide flex items-center gap-2">
+                                <i class="fa-solid fa-car text-orange-400 animate-pulse"></i>
+                                <span>${slot.driveTime}</span>
+                            </span>
+                        </div>
+                    `;
+                }
+
+                let categoryIcon = '<i class="fa-solid fa-camera"></i>';
+                let categoryColor = "bg-slate-100 text-slate-700";
+                
+                if (slot.category === '交通') {
+                    categoryIcon = '<i class="fa-solid fa-car"></i>';
+                    categoryColor = "bg-blue-50 text-blue-900 border border-blue-100";
+                } else if (slot.category === '餐飲') {
+                    categoryIcon = '<i class="fa-solid fa-utensils"></i>';
+                    categoryColor = "bg-amber-50 text-amber-900 border border-amber-100";
+                } else if (slot.category === '住宿') {
+                    categoryIcon = '<i class="fa-solid fa-bed"></i>';
+                    categoryColor = "bg-indigo-50 text-indigo-900 border border-indigo-100";
+                }
+
+                const mapcodeLabel = slot.mapcode && slot.mapcode !== "無需 Mapcode" ? `MAPCODE: ${slot.mapcode}` : "";
+
+                return `
+                    <div class="bg-white rounded-2xl p-4 shadow-sm border border-[#E2DCD5] space-y-3 hover:shadow-md transition-shadow active:scale-[0.99] transition-transform duration-100 cursor-pointer" onclick="openDetailModal(${currentDayFilter}, ${index})">
+                        <div class="flex justify-between items-start">
+                            <div class="flex items-center gap-1.5">
+                                <span class="w-7 h-7 rounded-full ${categoryColor} flex items-center justify-center text-xs">
+                                    ${categoryIcon}
+                                </span>
+                                <span class="text-xs font-bold text-slate-800">${slot.time}</span>
+                            </div>
+                            ${mapcodeLabel ? `
+                            <span class="text-[9px] text-slate-400 font-bold bg-slate-50 border border-slate-200/60 px-1.5 py-0.5 rounded">
+                                ${mapcodeLabel}
+                            </span>` : ''}
+                        </div>
+
+                        <div class="grid grid-cols-12 gap-3 items-center">
+                            <div class="col-span-8 space-y-0.5">
+                                <h4 class="font-bold text-[#1A303A] text-sm leading-tight">${slot.title}</h4>
+                                <p class="text-[11px] text-slate-500 line-clamp-2 leading-normal font-normal">${slot.desc}</p>
+                            </div>
+                            ${slot.image ? `
+                            <div class="col-span-4 h-14 rounded-lg overflow-hidden bg-slate-50 border border-slate-200 relative">
+                                <img src="${slot.image}" class="w-full h-full object-cover" alt="${slot.title}" onerror="this.src='https://placehold.co/100x100/FAF8F5/1A303A?text=Shikoku'">
+                            </div>` : ''}
+                        </div>
+
+                        <div class="flex justify-between items-center pt-2 border-t border-slate-100">
+                            <div class="flex items-center gap-1.5">
+                                <button onclick="openEditEventModal(${currentDayFilter}, ${index}, event)" class="px-2 py-1 rounded border border-slate-200 text-[10px] font-bold text-slate-500 bg-[#FAF8F5] flex items-center gap-1">
+                                    <i class="fa-regular fa-pen-to-square"></i> 編輯
+                                </button>
+                                <button onclick="deleteSlot(${currentDayFilter}, ${index}, event)" class="px-2 py-1 rounded border border-red-100 text-[10px] font-bold text-red-500 bg-red-50 flex items-center gap-1">
+                                    <i class="fa-regular fa-trash-can"></i> 刪除
+                                </button>
+                            </div>
+                            ${slot.gmaps ? `
+                                <a href="${slot.gmaps}" target="_blank" onclick="event.stopPropagation()" class="flex items-center gap-1 text-[10px] font-bold text-[#1A303A] bg-[#FAF8F5] px-2.5 py-1 rounded-full border border-[#E2DCD5] hover:bg-slate-100 active:scale-95 transition-all">
+                                    <i class="fa-solid fa-map text-orange-400"></i> 導航
+                                </a>
+                            ` : `<span class="text-[9px] text-slate-300">無需導航</span>`}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            container.innerHTML = html;
+        }
+
+        // 氣象衛星即時資訊抓取
+        async function fetchWeather() {
+            const currentDayObj = shikokuDb.days.find(d => d.day === currentDayFilter);
+            if (!currentDayObj) return;
+
+            const locKey = currentDayObj.location;
+            const coord = weatherCoords[locKey];
+            if (!coord) return;
+
+            const cityLabel = document.getElementById('weather-city');
+            const tempLabel = document.getElementById('weather-temp');
+            const descLabel = document.getElementById('weather-desc');
+            const windLabel = document.getElementById('weather-wind');
+
+            cityLabel.innerText = `${coord.name}市`;
+
+            try {
+                const response = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${coord.lat}&longitude=${coord.lon}&current_weather=true`);
+                if (!response.ok) throw new Error('Network error');
+                
+                const data = await response.json();
+                const temp = Math.round(data.current_weather.temperature);
+                const code = data.current_weather.weathercode;
+                const wind = data.current_weather.windspeed;
+
+                tempLabel.innerText = `${temp}°C`;
+                windLabel.innerText = `風速: ${wind} km/h`;
+
+                let weatherText = "☀️ 盛夏晴朗";
+                if (code > 0 && code <= 3) weatherText = "🌤️ 多雲偏晴";
+                else if (code >= 45 && code <= 48) weatherText = "🌫️ 局部有霧";
+                else if (code >= 51 && code <= 67) weatherText = "🌧️ 局部細雨";
+                else if (code >= 71 && code <= 82) weatherText = "🌦️ 短暫陣雨";
+
+                descLabel.innerText = weatherText;
+
+            } catch (err) {
+                tempLabel.innerText = "29°C";
+                descLabel.innerText = "☀️ 盛夏晴朗 (歷史統計平均)";
+                windLabel.innerText = "風速: 8.5 km/h";
+            }
+        }
+
+        // --- 新增與編輯自定義行程 ---
+        window.openAddEventModal = function() {
+            document.getElementById('add-event-modal-title').innerHTML = `<i class="fa-solid fa-calendar-plus text-orange-400"></i> 新增自定義行程`;
+            document.getElementById('new-event-day').value = currentDayFilter;
+            document.getElementById('new-event-index').value = "-1";
+
+            document.getElementById('new-event-title').value = '';
+            document.getElementById('new-event-time').value = '';
+            document.getElementById('new-event-cat').value = '景點';
+            document.getElementById('new-event-img').value = '';
+            document.getElementById('new-event-desc').value = '';
+            document.getElementById('new-event-gmaps').value = '';
+            document.getElementById('new-event-mapcode').value = '';
+
+            document.getElementById('add-event-modal').classList.remove('hidden');
+        };
+
+        window.openEditEventModal = function(dayNum, slotIndex, event) {
+            if (event) event.stopPropagation();
+
+            const dayObj = localDays.find(d => d.day === dayNum);
+            if (!dayObj) return;
+
+            const slot = dayObj.slots[slotIndex];
+            if (!slot) return;
+
+            document.getElementById('add-event-modal-title').innerHTML = `<i class="fa-solid fa-pen-to-square text-orange-400"></i> 編輯行程內容`;
+            document.getElementById('new-event-day').value = dayNum;
+            document.getElementById('new-event-index').value = slotIndex;
+
+            document.getElementById('new-event-title').value = slot.title || "";
+            document.getElementById('new-event-time').value = slot.time || "";
+            document.getElementById('new-event-cat').value = slot.category || "景點";
+            document.getElementById('new-event-img').value = slot.image || "";
+            document.getElementById('new-event-desc').value = slot.desc || "";
+            document.getElementById('new-event-gmaps').value = slot.gmaps || "";
+            document.getElementById('new-event-mapcode').value = slot.mapcode || "";
+
+            document.getElementById('add-event-modal').classList.remove('hidden');
+        };
+
+        window.closeAddEventModal = function() {
+            document.getElementById('add-event-modal').classList.add('hidden');
+        };
+
+        window.submitNewEvent = function() {
+            const dayNum = parseInt(document.getElementById('new-event-day').value);
+            const slotIndex = parseInt(document.getElementById('new-event-index').value);
+
+            const title = document.getElementById('new-event-title').value;
+            const time = document.getElementById('new-event-time').value;
+            const category = document.getElementById('new-event-cat').value;
+            const image = document.getElementById('new-event-img').value;
+            const desc = document.getElementById('new-event-desc').value;
+            const gmaps = document.getElementById('new-event-gmaps').value;
+            const mapcode = document.getElementById('new-event-mapcode').value;
+
+            if (!title || !time) {
+                showNotification("請填寫行程標題與時間！", "error");
+                return;
+            }
+
+            const dayObj = localDays.find(d => d.day === dayNum);
+            if (!dayObj) return;
+
+            const updatedSlot = {
+                time: time,
+                title: title,
+                category: category,
+                desc: desc || "無詳細說明。",
+                image: image || "https://placehold.co/400x300/FAF8F5/1A303A?text=Shikoku",
+                mapcode: mapcode || "無需 Mapcode",
+                gmaps: gmaps || "",
+                tips: "<b>自定義編輯行程 ✨：</b>自建專屬行程。"
+            };
+
+            if (slotIndex === -1) {
+                dayObj.slots.push(updatedSlot);
+                showNotification("自定義行程已成功加入日程表！");
+            } else {
+                dayObj.slots[slotIndex] = updatedSlot;
+                showNotification("行程內容修改已儲存！");
+            }
+
+            saveAllToStorage();
+            closeAddEventModal();
+            renderDaySlots();
+        };
+
+        window.deleteSlot = function(dayNum, slotIndex, event) {
+            if (event) event.stopPropagation();
+
+            const dayObj = localDays.find(d => d.day === dayNum);
+            if (!dayObj) return;
+
+            dayObj.slots.splice(slotIndex, 1);
+            saveAllToStorage();
+            showNotification("行程時段已安全移除。");
+            renderDaySlots();
+        };
+
+        // --- 3. 憑證分頁 ---
+        function renderVouchers(viewport) {
+            let vouchersHtml = localVouchers.map(v => {
+                const hasImage = v.image && v.image.trim() !== "";
+                return `
+                    <div class="bg-white rounded-2xl p-4 border border-[#E2DCD5] space-y-3">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <span class="text-[9px] font-bold text-slate-400 block">${v.time} | 預約號碼</span>
+                                <h4 class="text-sm font-black text-[#1A303A] mt-0.5">${v.category}</h4>
+                            </div>
+                            <span class="text-xs font-black text-blue-900 bg-blue-50 border border-blue-100 px-2 py-1 rounded-lg tracking-wider break-all shadow-sm">
+                                ${v.code}
+                            </span>
+                        </div>
+                        
+                        <div class="grid grid-cols-12 gap-3 items-center">
+                            <div class="${hasImage ? 'col-span-8' : 'col-span-12'} text-[11px] text-slate-500 leading-normal font-normal">
+                                ${v.content}
+                            </div>
+                            ${hasImage ? `
+                            <div class="col-span-4 h-14 rounded-lg overflow-hidden bg-slate-50 border border-slate-200 relative">
+                                <img src="${v.image}" class="w-full h-full object-cover">
+                            </div>
+                            ` : ''}
+                        </div>
+
+                        <div class="flex justify-end items-center gap-1.5 pt-1.5 border-t border-slate-100">
+                            <button onclick="openAddVoucherModal(${v.id})" class="text-slate-500 hover:text-blue-900 px-2 py-1 rounded border border-slate-200 text-[10px] font-bold flex items-center gap-1 bg-[#FAF8F5]">
+                                <i class="fa-regular fa-pen-to-square"></i> 編輯
+                            </button>
+                            <button onclick="deleteVoucher(${v.id})" class="text-red-500 hover:text-red-700 px-2 py-1 rounded border border-red-100 text-[10px] font-bold flex items-center gap-1 bg-red-50">
+                                <i class="fa-regular fa-trash-can"></i> 刪除
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            viewport.innerHTML = `
+                <div class="space-y-3">
+                    <div class="flex items-center gap-2 border-b border-slate-100 pb-3">
+                        <div class="bg-blue-50 text-[#1A303A] w-9 h-9 rounded-xl flex items-center justify-center text-base">
+                            <i class="fa-solid fa-ticket"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-black text-slate-900 text-sm">預約憑證保險箱</h3>
+                            <p class="text-[10px] text-slate-400">登機與入住快速核對</p>
+                        </div>
+                    </div>
+
+                    <div class="space-y-3">
+                        ${vouchersHtml}
+                    </div>
+
+                    <!-- ➕ 新增憑證按鈕 -->
+                    <button onclick="openAddVoucherModal()" class="w-full py-3 border border-dashed border-[#E2DCD5] hover:border-[#1A303A] text-slate-500 hover:text-[#1A303A] font-bold rounded-xl transition flex items-center justify-center gap-2 bg-white/50 text-xs">
+                        <i class="fa-solid fa-file-signature text-blue-900 text-sm"></i>
+                        <span>新增預約憑證</span>
+                    </button>
+                </div>
+
+                <div class="bg-[#1A303A] text-white rounded-2xl p-4 shadow-sm flex items-center justify-between border border-white/5 relative overflow-hidden mt-3">
+                    <div class="absolute inset-0 bg-[radial-gradient(circle_at_bottom_left,_var(--tw-gradient-stops))] from-blue-800/15 via-transparent to-transparent"></div>
+                    <div class="relative z-10 space-y-0.5">
+                        <span class="text-[8px] font-bold text-slate-300 uppercase block tracking-wider">入境審查工具</span>
+                        <h4 class="font-black text-sm text-white">Visit Japan Web</h4>
+                    </div>
+                    <a href="https://vjw-lp.digital.go.jp/zh-hant/" target="_blank" class="relative z-10 bg-white text-slate-950 font-black px-3 py-2 rounded-lg text-[10px] hover:bg-slate-100 transition shadow-md active:scale-95">
+                        前往填寫
+                    </a>
+                </div>
+            `;
+        }
+
+        window.openAddVoucherModal = function(id = null) {
+            const modal = document.getElementById('add-voucher-modal');
+            const modalTitle = document.getElementById('voucher-modal-title');
+            
+            document.getElementById('voucher-id').value = id || '';
+            document.getElementById('voucher-title').value = '';
+            document.getElementById('voucher-time').value = '';
+            document.getElementById('voucher-code').value = '';
+            document.getElementById('voucher-img').value = '';
+            document.getElementById('voucher-desc').value = '';
+
+            if (id) {
+                modalTitle.innerHTML = `<i class="fa-solid fa-file-signature text-[#1A303A]"></i> 編輯預約憑證`;
+                const item = localVouchers.find(v => v.id === id);
+                if (item) {
+                    document.getElementById('voucher-title').value = item.category;
+                    document.getElementById('voucher-time').value = item.time;
+                    document.getElementById('voucher-code').value = item.code;
+                    document.getElementById('voucher-img').value = item.image;
+                    document.getElementById('voucher-desc').value = item.content;
+                }
+            } else {
+                modalTitle.innerHTML = `<i class="fa-solid fa-file-signature text-[#1A303A]"></i> 新增預約憑證`;
+            }
+            
+            modal.classList.remove('hidden');
+        };
+
+        window.closeAddVoucherModal = function() {
+            document.getElementById('add-voucher-modal').classList.add('hidden');
+        };
+
+        window.submitVoucher = function() {
+            const id = document.getElementById('voucher-id').value;
+            const title = document.getElementById('voucher-title').value;
+            const time = document.getElementById('voucher-time').value;
+            const code = document.getElementById('voucher-code').value;
+            const img = document.getElementById('voucher-img').value;
+            const desc = document.getElementById('voucher-desc').value;
+
+            if (!title || !time || !code) {
+                showNotification("請填寫憑證名稱、時間及預約代碼！", "error");
+                return;
+            }
+
+            if (id) {
+                const index = localVouchers.findIndex(v => v.id === parseInt(id));
+                if (index !== -1) {
+                    localVouchers[index] = {
+                        id: parseInt(id),
+                        category: title,
+                        time: time,
+                        code: code,
+                        image: img,
+                        content: desc || "無詳細備註說明。"
+                    };
+                    showNotification("預約憑證已更新成功！");
+                }
+            } else {
+                const newVoucher = {
+                    id: Date.now(),
+                    category: title,
+                    time: time,
+                    code: code,
+                    image: img || '',
+                    content: desc || "無詳細備註說明。"
+                };
+                localVouchers.push(newVoucher);
+                showNotification("自定義預約憑證已儲存！");
+            }
+
+            saveAllToStorage();
+            closeAddVoucherModal();
+            renderVouchers(document.getElementById('app-viewport'));
+        };
+
+        window.deleteVoucher = function(id) {
+            localVouchers = localVouchers.filter(v => v.id !== id);
+            saveAllToStorage();
+            renderVouchers(document.getElementById('app-viewport'));
+            showNotification("憑證記錄已安全移除。");
+        };
+
+        // --- 4. 記帳分頁 ---
+        let expenseFilterCategory = '全部';
+
+        function renderWallet(viewport) {
+            let filteredExpenses = localExpenses;
+            if (expenseFilterCategory !== '全部') {
+                filteredExpenses = localExpenses.filter(e => e.category === expenseFilterCategory);
+            }
+
+            let totalJPY = filteredExpenses.reduce((acc, curr) => acc + curr.jpy, 0);
+            let totalMOP = totalJPY * JPY_TO_MOP;
+
+            let categories = ['全部', '餐飲', '交通', '住宿', '購物', '其他'];
+            let categoryFilterHtml = categories.map(cat => `
+                <button onclick="changeWalletFilter('${cat}')" class="flex-shrink-0 px-3.5 py-1.5 rounded-full font-black text-[11px] tracking-wider transition-all ${expenseFilterCategory === cat ? 'bg-[#1A303A] text-white shadow-sm' : 'bg-white text-slate-600 border border-[#E2DCD5]'}">
+                    ${cat}
+                </button>
+            `).join('');
+
+            let historyHtml = filteredExpenses.map(e => `
+                <div class="flex justify-between items-center bg-slate-50 p-3 rounded-xl border border-slate-200/50 animate-zoom-in">
+                    <div class="flex-1 min-w-0 pr-2">
+                        <span class="text-[8px] text-slate-400 font-black uppercase tracking-wider block bg-white border border-[#E2DCD5] px-1.5 py-0.5 rounded inline-block mb-1">${e.day} | ${e.category}</span>
+                        <h4 class="font-bold text-slate-800 text-xs truncate">${e.title}</h4>
+                    </div>
+                    <div class="text-right flex items-center gap-2">
+                        <div>
+                            <div class="font-black text-slate-800 text-xs">¥${e.jpy.toLocaleString()}</div>
+                            <div class="text-[9px] text-slate-400">≈ ${(e.jpy * JPY_TO_MOP).toFixed(1)} MOP</div>
+                        </div>
+                        <button onclick="deleteExpenseItem(${e.id})" class="text-slate-300 hover:text-red-500 p-1.5 transition-colors duration-200" title="刪除記錄">
+                            <i class="fa-regular fa-trash-can text-xs"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+
+            viewport.innerHTML = `
+                <div class="bg-white rounded-2xl p-4 shadow-sm border border-[#E2DCD5] text-center space-y-2">
+                    <span class="text-[10px] font-black tracking-widest text-slate-400 uppercase">篩選後記帳總計</span>
+                    <div class="space-y-0.5">
+                        <div class="text-2xl font-black tracking-tight text-[#1A303A]">${totalMOP.toLocaleString(undefined, {minimumFractionDigits: 1, maximumFractionDigits: 1})} MOP</div>
+                        <div class="text-[11px] font-bold text-slate-400">≈ ¥${totalJPY.toLocaleString()} JPY (匯率: 0.052)</div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-2xl p-4 shadow-sm border border-[#E2DCD5] space-y-3">
+                    <h3 class="font-black text-slate-900 text-xs tracking-wide"><i class="fa-solid fa-plus mr-1 text-orange-400"></i> 新增自駕消費項目</h3>
+                    <div class="grid grid-cols-2 gap-2">
+                        <input id="add-title" type="text" placeholder="項目 (如: 藥妝)" class="col-span-2 p-2.5 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:outline-[#1A303A]">
+                        <input id="add-jpy" type="number" placeholder="日幣金額 JPY" class="p-2.5 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:outline-[#1A303A]">
+                        <select id="add-cat" class="p-2.5 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:outline-[#1A303A] font-bold">
+                            <option value="餐飲">餐飲</option>
+                            <option value="交通">交通</option>
+                            <option value="住宿">住宿</option>
+                            <option value="購物">購物</option>
+                            <option value="其他">其他</option>
+                        </select>
+                        <select id="add-day" class="p-2.5 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:outline-[#1A303A] font-bold col-span-2">
+                            <option value="Day 1">Day 1</option>
+                            <option value="Day 2">Day 2</option>
+                            <option value="Day 3">Day 3</option>
+                            <option value="Day 4">Day 4</option>
+                            <option value="Day 5">Day 5</option>
+                            <option value="Day 6">Day 6</option>
+                            <option value="Day 7">Day 7</option>
+                        </select>
+                    </div>
+                    <button onclick="addExpenseItem()" class="w-full py-2.5 bg-[#1A303A] text-white font-bold rounded-xl shadow-md hover:bg-slate-800 active:scale-[0.98] transition-all text-xs tracking-wider uppercase">記錄消費</button>
+                </div>
+
+                <div class="space-y-2">
+                    <h3 class="text-[10px] font-black tracking-widest text-slate-400 uppercase">消費紀錄明細</h3>
+                    <div class="flex gap-1.5 overflow-x-auto no-scrollbar pb-1 px-1">
+                        ${categoryFilterHtml}
+                    </div>
+                    <div class="grid grid-cols-1 gap-1.5 max-h-56 overflow-y-auto no-scrollbar">
+                        ${historyHtml.length > 0 ? historyHtml : '<div class="text-center py-6 text-slate-400 text-[11px]">尚無此分類消費紀錄</div>'}
+                    </div>
+                </div>
+            `;
+        }
+
+        function changeWalletFilter(cat) {
+            expenseFilterCategory = cat;
+            renderWallet(document.getElementById('app-viewport'));
+        }
+
+        function addExpenseItem() {
+            const titleInput = document.getElementById('add-title');
+            const jpyInput = document.getElementById('add-jpy');
+            const catSelect = document.getElementById('add-cat');
+            const daySelect = document.getElementById('add-day');
+
+            if (!titleInput.value || !jpyInput.value || jpyInput.value <= 0) {
+                showNotification('請完整輸入項目與日幣金額。', 'error');
+                return;
+            }
+
+            const newExpense = {
+                id: Date.now(),
+                title: titleInput.value,
+                jpy: parseInt(jpyInput.value, 10),
+                category: catSelect.value,
+                day: daySelect.value
+            };
+
+            localExpenses.unshift(newExpense);
+            saveAllToStorage();
+            renderWallet(document.getElementById('app-viewport'));
+            showNotification('記帳項目新增成功！');
+        }
+
+        function deleteExpenseItem(id) {
+            localExpenses = localExpenses.filter(e => e.id !== id);
+            saveAllToStorage();
+            renderWallet(document.getElementById('app-viewport'));
+            showNotification('記帳項目已刪除。');
+        }
+
+        // --- 5. 應急聯絡安全頁面 ---
+        function renderEmergency(viewport) {
+            viewport.innerHTML = `
+                <div class="bg-red-50 border border-red-200/80 rounded-2xl p-4 shadow-sm space-y-3">
+                    <div class="flex items-center gap-2">
+                        <div class="bg-red-500 text-white w-9 h-9 rounded-xl flex items-center justify-center text-base">
+                            <i class="fa-solid fa-shield-halved animate-pulse"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-black text-red-950 text-sm">安全與緊急救援專區</h3>
+                            <p class="text-[10px] text-red-700">旅日安全防範重於一切，請截圖備用</p>
+                        </div>
+                    </div>
+                    <p class="text-[11px] text-red-900 leading-normal font-normal">遇到交通事故或人身急難，請務必先拍照留存證據，隨後使用以下直通電話聯繫當地緊急單位或駐日辦事處。</p>
+                </div>
+
+                <div class="space-y-2">
+                    <h3 class="text-[10px] font-black tracking-widest text-slate-400 uppercase">日本境內報警與救援</h3>
+                    
+                    <div class="bg-white border border-[#E2DCD5] p-3 rounded-xl flex justify-between items-center shadow-sm">
+                        <div>
+                            <span class="text-[9px] font-black text-red-600 uppercase block">日本報警 (直通)</span>
+                            <span class="text-base font-black text-slate-800">110</span>
+                        </div>
+                        <a href="tel:110" class="w-9 h-9 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-lg flex items-center justify-center transition-all">
+                            <i class="fa-solid fa-phone text-sm"></i>
+                        </a>
+                    </div>
+
+                    <div class="bg-white border border-[#E2DCD5] p-3 rounded-xl flex justify-between items-center shadow-sm">
+                        <div>
+                            <span class="text-[9px] font-black text-orange-600 uppercase block">急救車 / 火災救援</span>
+                            <span class="text-base font-black text-slate-800">119</span>
+                        </div>
+                        <a href="tel:119" class="w-9 h-9 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-lg flex items-center justify-center transition-all">
+                            <i class="fa-solid fa-phone text-sm"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="space-y-2">
+                    <h3 class="text-[10px] font-black tracking-widest text-slate-400 uppercase">外交部駐日使領館</h3>
+
+                    <div class="bg-white border border-[#E2DCD5] p-3 rounded-xl space-y-2 shadow-sm">
+                        <div>
+                            <span class="text-[9px] font-black text-[#1A303A] uppercase block">外交部全球領事保護（24小時）</span>
+                            <span class="text-sm font-black text-slate-800">+86 10-12308</span>
+                        </div>
+                        <a href="tel:+861012308" class="w-full py-1.5 bg-[#1A303A] text-white text-center rounded-lg font-bold text-[10px] flex items-center justify-center gap-1">
+                            <i class="fa-solid fa-phone text-[9px]"></i> 撥打求助
+                        </a>
+                    </div>
+
+                    <div class="bg-white border border-[#E2DCD5] p-3 rounded-xl space-y-2 shadow-sm">
+                        <div>
+                            <span class="text-[9px] font-black text-[#1A303A] uppercase block">駐大阪總領事館 (轄區包含四國)</span>
+                            <span class="text-sm font-black text-slate-800">+81 6-6445-9481</span>
+                        </div>
+                        <a href="tel:+81664459481" class="w-full py-1.5 bg-[#1A303A] text-white text-center rounded-lg font-bold text-[10px] flex items-center justify-center gap-1">
+                            <i class="fa-solid fa-phone text-[9px]"></i> 撥打總機
+                        </a>
+                    </div>
+                </div>
+            `;
+        }
+
+        // --- 6. 點擊詳情彈窗功能 (置中顯示修正) ---
+        function openDetailModal(dayNum, slotIndex) {
+            const dayData = localDays.find(d => d.day === dayNum);
+            if (!dayData) return;
+
+            const slot = dayData.slots[slotIndex];
+            if (!slot) return;
+            if (slot.driveTime) return;
+
+            const modal = document.getElementById('detail-modal');
+            const content = document.getElementById('modal-content');
+
+            content.innerHTML = `
+                <div class="space-y-1">
+                    <div class="flex items-center gap-1.5">
+                        <span class="text-[10px] font-black text-blue-900 bg-blue-50 px-2 py-0.5 rounded">${slot.category}</span>
+                        <span class="text-[10px] text-slate-400">${slot.time}</span>
+                    </div>
+                    <h3 class="text-sm font-black text-slate-900 leading-tight">${slot.title}</h3>
+                </div>
+
+                ${slot.image ? `
+                <div class="h-28 rounded-xl overflow-hidden bg-slate-100 border border-slate-200 relative">
+                    <img src="${slot.image}" class="w-full h-full object-cover" alt="${slot.title}" onerror="this.src='https://placehold.co/400x300/FAF8F5/1A303A?text=Shikoku'">
+                </div>` : ''}
+
+                <div class="space-y-1">
+                    <h4 class="text-[10px] font-black tracking-widest text-slate-400 uppercase">活動詳情</h4>
+                    <p class="text-xs text-slate-600 leading-normal font-normal">${slot.desc}</p>
+                </div>
+
+                <div class="bg-amber-50 border border-amber-200 p-2.5 rounded-xl space-y-1">
+                    <div class="text-[10px] font-black text-amber-800 flex items-center gap-1">
+                        <i class="fa-solid fa-compass"></i> MIO MIO 導遊隨行攻略與必買必吃
+                    </div>
+                    <p class="text-[10px] text-slate-700 leading-relaxed font-normal">${slot.tips}</p>
+                </div>
+
+                <div class="grid grid-cols-2 gap-2.5 pt-1">
+                    <div class="p-2 bg-slate-50 border border-slate-200 rounded-lg text-center">
+                        <span class="text-[8px] text-slate-400 font-bold uppercase block">車機導航代碼</span>
+                        <span class="text-xs font-black text-slate-800">${slot.mapcode}</span>
+                    </div>
+                    ${slot.gmaps ? `
+                        <a href="${slot.gmaps}" target="_blank" class="p-2 bg-[#1A303A] text-white rounded-lg text-center font-black text-xs flex items-center justify-center gap-1.5 shadow-md">
+                            <i class="fa-solid fa-map text-[10px]"></i> 開啟地圖
+                        </a>
+                    ` : `
+                        <div class="p-2 bg-slate-100 text-slate-300 rounded-lg text-center font-black text-xs flex items-center justify-center">
+                            無須導航
+                        </div>
+                    `}
+                </div>
+            `;
+
+            modal.classList.remove('hidden');
+        }
+
+        function closeDetailModal() {
+            document.getElementById('detail-modal').classList.add('hidden');
+        }
+
+        // 預設啟動與載入邏輯
+        window.onload = function () {
+            loadAllData();
+            switchTab('overview');
+
+            if (window.pendingTripData) {
+                setTimeout(() => {
+                    document.getElementById('import-modal').classList.remove('hidden');
+                }, 600);
+            }
+        }
+    </script>
+</body>
+</html>
